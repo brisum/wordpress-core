@@ -1,0 +1,65 @@
+{
+  "config": {
+    "preferred-install": "source"
+  },
+  "require": {
+    "brisum/component": "dev-master",
+    "brisum/lib": "dev-master",
+    "brisum/wordpress": "dev-master",
+    "olefredrik/foundationpress": "^2.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "ThemeDummy\\": ["wp-content/themes/dummy/module"],
+      "Brisum\\Lib\\": ["vendor/brisum/lib"],
+      "Brisum\\Component\\": ["vendor/brisum/component"],
+      "Brisum\\Wordpress\\": ["vendor/brisum/wordpress"]
+    },
+    "classmap": []
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "cd vendor/brisum/component && ls ./ | grep -vP \"^(ComponentManager|Form|Profiler)$\" | xargs rm -rf",
+      "cd vendor/brisum/lib && ls ./ | grep -vP \"^(Cache|Context|Http|Language|Mvc|ObjectManager|Storage|Validator)$\" | xargs rm -rf",
+      "cd vendor/brisum/wordpress && ls ./ | grep -vP \"^(Theme)$\" | xargs rm -rf"
+    ]
+  },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "brisum/component",
+        "version": "dev-master",
+        "source": {
+          "url": "git@bitbucket.org:brisum/php-component.git",
+          "type": "git",
+          "reference": "origin/master"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "brisum/lib",
+        "version": "dev-master",
+        "source": {
+          "url": "git@bitbucket.org:brisum/php-lib.git",
+          "type": "git",
+          "reference": "origin/master"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "brisum/wordpress",
+        "version": "dev-master",
+        "source": {
+          "url": "git@bitbucket.org:brisum/wordpress-utils.git",
+          "type": "git",
+          "reference": "origin/master"
+        }
+      }
+    }
+  ]
+}
