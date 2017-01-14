@@ -18,7 +18,15 @@
  * @package WordPress
  */
 
+if ('domain.com.ua'  != $_SERVER['SERVER_NAME']) {
+    header("X-Robots-Tag: noindex, nofollow", true);
+}
+
 require_once('wp-config-local.php');
+
+!defined('DB_HOST') && define('DB_HOST', 'localhost');
+!defined('DB_CHARSET') && define('DB_CHARSET', 'utf8');
+!defined('DB_COLLATE') && define('DB_COLLATE', '');
 
 /**#@+
  * Уникальные ключи и соли для аутентификации.
