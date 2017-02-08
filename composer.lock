@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c136bd43df7bc93fc6912ca4c84af44a",
-    "content-hash": "4f0a20e5a9e917df3c11027abbbc1946",
+    "hash": "d9d151e9719557fd1339e2f8493ef996",
+    "content-hash": "2467107f8d0a8f80ebae3fcb307ffca4",
     "packages": [
         {
             "name": "brisum/component",
@@ -16,7 +16,7 @@
                 "reference": "origin/master"
             },
             "type": "library",
-            "time": "2016-10-18 10:02:48"
+            "time": "2016-12-11 19:24:34"
         },
         {
             "name": "brisum/lib",
@@ -27,7 +27,84 @@
                 "reference": "origin/master"
             },
             "type": "library",
-            "time": "2016-10-18 09:57:23"
+            "time": "2017-02-03 17:45:37"
+        },
+        {
+            "name": "brisum/lib-object-manager",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brisum/php-lib-object-manager.git",
+                "reference": "f4bf17c8b03bffab4673aaa12a193dcb9c8bf059"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brisum/php-lib-object-manager/zipball/f4bf17c8b03bffab4673aaa12a193dcb9c8bf059",
+                "reference": "f4bf17c8b03bffab4673aaa12a193dcb9c8bf059",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Brisum\\Lib\\ObjectManager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oleksandr Manchenko",
+                    "email": "omanchenko@brisum.com",
+                    "homepage": "http://brisum.com"
+                }
+            ],
+            "description": "Simple ObjectManager",
+            "homepage": "https://github.com/brisum/php-lib-object-manager",
+            "keywords": [
+                "object manager "
+            ],
+            "time": "2017-02-03 20:00:45"
+        },
+        {
+            "name": "brisum/lib-tree-builder",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brisum/php-lib-tree-builder.git",
+                "reference": "2936cf9680b9085bdcb300e54d0854f914a18e93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brisum/php-lib-tree-builder/zipball/2936cf9680b9085bdcb300e54d0854f914a18e93",
+                "reference": "2936cf9680b9085bdcb300e54d0854f914a18e93",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Brisum\\Lib\\TreeBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oleksandr Manchenko",
+                    "email": "omanchenko@brisum.com",
+                    "homepage": "http://brisum.com"
+                }
+            ],
+            "description": "Build tree from array, object list",
+            "homepage": "https://github.com/brisum/php-lib-tree-builder",
+            "keywords": [
+                "builder",
+                "tree"
+            ],
+            "time": "2017-02-03 18:39:19"
         },
         {
             "name": "brisum/wordpress",
@@ -38,7 +115,7 @@
                 "reference": "origin/master"
             },
             "type": "library",
-            "time": "2016-10-18 09:48:01"
+            "time": "2017-02-03 17:45:50"
         },
         {
             "name": "composer/installers",

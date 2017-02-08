@@ -6,7 +6,10 @@
     "brisum/component": "dev-master",
     "brisum/lib": "dev-master",
     "brisum/wordpress": "dev-master",
-    "olefredrik/foundationpress": "^2.7"
+    "olefredrik/foundationpress": "^2.7",
+    "brisum/lib-tree-builder": "^1.0",
+    "brisum/lib-object-manager": "^0.1.0",
+    "brisum/lib-excel-xlsx": "^0.1.0"
   },
   "autoload": {
     "psr-4": {
@@ -19,9 +22,9 @@
   },
   "scripts": {
     "post-update-cmd": [
-      "cd vendor/brisum/component && ls ./ | grep -vP \"^(ComponentManager|Form|Profiler)$\" | xargs rm -rf",
-      "cd vendor/brisum/lib && ls ./ | grep -vP \"^(Cache|Context|Http|Language|Mvc|ObjectManager|Storage|Validator)$\" | xargs rm -rf",
-      "cd vendor/brisum/wordpress && ls ./ | grep -vP \"^(Theme)$\" | xargs rm -rf"
+      "cd vendor/brisum/component && ls ./ | grep -vP \"^.*$\" | xargs rm -rf",
+      "cd vendor/brisum/lib && ls ./ | grep -vP \"^.*$\" | xargs rm -rf",
+      "cd vendor/brisum/wordpress && ls ./ | grep -vP \"^*$\" | xargs rm -rf"
     ]
   },
   "repositories": [
