@@ -3,6 +3,7 @@
  * Sitemap class.
  *
  * @package All-in-One-SEO-Pack
+ * @version 2.3.13
  */
 
 if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
@@ -22,6 +23,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		var $freq;
 		var $freq_sel;
 		var $extra_sitemaps;
+		var $excludes = array();
 
 		/**
 		 * All_in_One_SEO_Pack_Sitemap constructor.
@@ -141,12 +143,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			$this->layout = array(
 				'status'  => array(
 					'name'      => __( 'Sitemap Status', 'all-in-one-seo-pack' ),
-					'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/',
+					'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/',
 					'options'   => array_keys( $status_options ),
 				),
 				'default' => array(
 					'name'      => $this->name,
-					'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/',
+					'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/',
 					'options'   => array_keys( $this->default_options ),
 				),
 			);
@@ -266,25 +268,25 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 
 			$this->layout['addl_pages'] = array(
 				'name'      => __( 'Additional Pages', 'all-in-one-seo-pack' ),
-				'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/#additional-pages',
+				'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/#additional-pages',
 				'options'   => array_keys( $addl_options ),
 			);
 
 			$this->layout['excl_pages'] = array(
 				'name'      => __( 'Excluded Items', 'all-in-one-seo-pack' ),
-				'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/#excluded-items',
+				'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/#excluded-items',
 				'options'   => array_keys( $excl_options ),
 			);
 
 			$this->layout['priorities'] = array(
 				'name'      => __( 'Priorities', 'all-in-one-seo-pack' ),
-				'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/#priorities-and-frequencies',
+				'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/#priorities-and-frequencies',
 				'options'   => array_keys( $prio_options ),
 			);
 
 			$this->layout['frequencies'] = array(
 				'name'      => __( 'Frequencies', 'all-in-one-seo-pack' ),
-				'help_link' => 'http://semperplugins.com/documentation/xml-sitemaps-module/#priorities-and-frequencies',
+				'help_link' => 'https://semperplugins.com/documentation/xml-sitemaps-module/#priorities-and-frequencies',
 				'options'   => array_keys( $freq_options ),
 			);
 
@@ -345,7 +347,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 *
 		 * Add new intervals of a week and a month.
 		 *
-		 * @link http://codex.wordpress.org/Plugin_API/Filter_Reference/cron_schedules
+		 * @link https://codex.wordpress.org/Plugin_API/Filter_Reference/cron_schedules
 		 *
 		 * @param $schedules
 		 *
@@ -602,6 +604,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 *
 		 * Add in options for status display on settings page, sitemap rewriting on multisite.
 		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
+		 *
 		 * @param $options
 		 *
 		 * @return mixed
@@ -613,12 +618,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			if ( isset( $options[ $this->prefix . 'max_posts' ] ) && ( ( $options[ $this->prefix . 'max_posts' ] <= 0 ) || ( $options[ $this->prefix . 'max_posts' ] >= 50000 ) ) ) {
 				$options[ $this->prefix . 'max_posts' ] = 50000;
 			}
-			$url                               = trailingslashit( get_home_url() ) . $options[ $this->prefix . 'filename' ] . '.xml';
+			$url = aioseop_home_url( '/' . $options[ $this->prefix . 'filename' ] . '.xml' );
 
 			$options[ $this->prefix . 'link' ] = sprintf( __( 'Click here to %s.', 'all-in-one-seo-pack' ), '<a href="' . esc_url( $url ) . '" target="_blank">' . __( 'view your sitemap', 'all-in-one-seo-pack' ) . '</a>' );
 			$options[ $this->prefix . 'link' ] .= __( ' Your sitemap has been created', 'all-in-one-seo-pack' );
 			if ( '0' !== get_option( 'blog_public' ) ){
-				$options[ $this->prefix . 'link' ] .= __( ' and changes are automatically submitted to search engines' );
+				$options[ $this->prefix . 'link' ] .= __( ' and changes are automatically submitted to search engines.', 'all-in-one-seo-pack' );
 			}
 			$options[ $this->prefix . 'link' ] .= '.';
 
@@ -1275,13 +1280,18 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		/**
 		 * Build a url to the sitemap.
 		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
+		 *
 		 * @return string
 		 */
 		function get_sitemap_url() {
-			$url = get_home_url() . '/' . $this->options["{$this->prefix}filename"] . '.xml';
+
+			$gz = '';
 			if ( $this->options["{$this->prefix}gzipped"] ) {
-				$url .= '.gz';
+				$gz .= '.gz';
 			}
+			$url = aioseop_home_url( '/' . $this->options["{$this->prefix}filename"] . ".xml$gz" );
 
 			return $url;
 		}
@@ -1302,8 +1312,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			}
 
 			$notify_url = array(
-				'google' => 'http://www.google.com/webmasters/sitemaps/ping?sitemap=',
-				'bing'   => 'http://www.bing.com/webmaster/ping.aspx?siteMap=',
+				'google' => 'https://www.google.com/webmasters/sitemaps/ping?sitemap=',
+				'bing'   => 'https://www.bing.com/webmaster/ping.aspx?siteMap=',
 			);
 
 			$notify_url = apply_filters( 'aioseo_sitemap_ping_urls', $notify_url );
@@ -1523,6 +1533,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		/**
 		 * Build an index of sitemaps used.
 		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
+		 *
 		 * @return array
 		 */
 		function get_sitemap_index_filenames() {
@@ -1541,8 +1554,9 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			}
 			$options["{$this->prefix}posttypes"]  = array_diff( $options["{$this->prefix}posttypes"], array( 'all' ) );
 			$options["{$this->prefix}taxonomies"] = array_diff( $options["{$this->prefix}taxonomies"], array( 'all' ) );
-			$url_base                             = trailingslashit( get_home_url() );
-			$files[]                              = array( 'loc' => $url_base . $prefix . '_addl' . $suffix );
+
+			$files[] = array( 'loc' => aioseop_home_url( '/' . $prefix . '_addl' . $suffix ) );
+
 			if ( ! empty( $options["{$this->prefix}posttypes"] ) ) {
 				$prio        = $this->get_default_priority( 'post' );
 				$freq        = $this->get_default_frequency( 'post' );
@@ -1562,21 +1576,21 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 							$count = 1;
 							for ( $post_count = 0; $post_count < $post_counts[ $sm ]; $post_count += $this->max_posts ) {
 								$files[] = array(
-									'loc'        => $url_base . $prefix . '_' . $sm . '_' . ( $count ++ ) . $suffix,
+									'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . '_' . ( $count ++ ) . $suffix ),
 									'priority'   => $prio,
 									'changefreq' => $freq,
 								);
 							}
 						} else {
 							$files[] = array(
-								'loc'        => $url_base . $prefix . '_' . $sm . $suffix,
+								'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . $suffix ),
 								'priority'   => $prio,
 								'changefreq' => $freq,
 							);
 						}
 					} else {
 						$files[] = array(
-							'loc'        => $url_base . $prefix . '_' . $sm . $suffix,
+							'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . $suffix ),
 							'priority'   => $prio,
 							'changefreq' => $freq,
 						);
@@ -1585,14 +1599,14 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			}
 			if ( $this->option_isset( 'archive' ) ) {
 				$files[] = array(
-					'loc'        => $url_base . $prefix . '_archive' . $suffix,
+					'loc'        => aioseop_home_url ( '/' . $prefix . '_archive' . $suffix ),
 					'priority'   => $this->get_default_priority( 'archive' ),
 					'changefreq' => $this->get_default_frequency( 'archive' ),
 				);
 			}
 			if ( $this->option_isset( 'author' ) ) {
 				$files[] = array(
-					'loc'        => $url_base . $prefix . '_author' . $suffix,
+					'loc'        => aioseop_home_url ( '/' . $prefix . '_author' . $suffix ),
 					'priority'   => $this->get_default_priority( 'author' ),
 					'changefreq' => $this->get_default_frequency( 'author' ),
 				);
@@ -1607,21 +1621,21 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 								$count = 1;
 								for ( $tc = 0; $tc < $term_count; $tc += $this->max_posts ) {
 									$files[] = array(
-										'loc'        => $url_base . $prefix . '_' . $sm . '_' . ( $count ++ ) . $suffix,
+										'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . '_' . ( $count ++ ) . $suffix ),
 										'priority'   => $this->get_default_priority( 'taxonomies' ),
 										'changefreq' => $this->get_default_frequency( 'taxonomies' ),
 									);
 								}
 							} else {
 								$files[] = array(
-									'loc'        => $url_base . $prefix . '_' . $sm . $suffix,
+									'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . $suffix ),
 									'priority'   => $this->get_default_priority( 'taxonomies' ),
 									'changefreq' => $this->get_default_frequency( 'taxonomies' ),
 								);
 							}
 						} else {
 							$files[] = array(
-								'loc'        => $url_base . $prefix . '_' . $sm . $suffix,
+								'loc'        => aioseop_home_url ( '/' . $prefix . '_' . $sm . $suffix ),
 								'priority'   => $this->get_default_priority( 'taxonomies' ),
 								'changefreq' => $this->get_default_frequency( 'taxonomies' ),
 							);
@@ -1761,18 +1775,57 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			$this->log_stats( 'indexed', $options["{$this->prefix}gzipped"], false );
 		}
 
+		function remove_posts_page( $postspageid ) {
+			if ( in_array( $postspageid, $this->excludes ) ) {
+				return true;
+			}
+
+			if ( in_array( get_post_field( 'post_name', $postspageid ), $this->excludes ) ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		function remove_homepage( $homepage_id ) {
+			if ( in_array( $homepage_id, $this->excludes ) ) {
+
+				return true;
+			}
+			if ( in_array( get_post_field( 'post_name', $homepage_id ), $this->excludes ) ) {
+				return true;
+			}
+
+			return false;
+		}
+
 		/**
 		 * Get simple sitemap.
+		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
 		 *
 		 * @return array
 		 */
 		function get_simple_sitemap() {
+			$child   = $this->get_child_sitemap_urls();
+			$options = $this->options;
+			if ( is_array( $options["{$this->prefix}posttypes"] ) ) {
+				$options["{$this->prefix}posttypes"] = array_diff( $options["{$this->prefix}posttypes"], array( 'all' ) );
+			}
+			if ( is_array( $options["{$this->prefix}taxonomies"] ) ) {
+				$options["{$this->prefix}taxonomies"] = array_diff( $options["{$this->prefix}taxonomies"], array( 'all' ) );
+			}
+			$prio = $this->get_all_post_priority_data( $options["{$this->prefix}posttypes"] );
+
 			$home           = array(
-				'loc'        => get_home_url(),
+				'loc'        => aioseop_home_url(),
 				'priority'   => $this->get_default_priority( 'homepage' ),
 				'changefreq' => $this->get_default_frequency( 'homepage' ),
 			);
-			$posts          = get_option( 'page_for_posts' );
+
+			$posts   = $postspageid    = get_option( 'page_for_posts' ); // It's 0 if posts are on homepage, otherwise it's the id of the posts page.
+
 			$this->paginate = false;
 			if ( $posts ) {
 				$posts = $this->get_permalink( $posts );
@@ -1786,15 +1839,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 					);
 				}
 			}
-			$child   = $this->get_child_sitemap_urls();
-			$options = $this->options;
-			if ( is_array( $options["{$this->prefix}posttypes"] ) ) {
-				$options["{$this->prefix}posttypes"] = array_diff( $options["{$this->prefix}posttypes"], array( 'all' ) );
-			}
-			if ( is_array( $options["{$this->prefix}taxonomies"] ) ) {
-				$options["{$this->prefix}taxonomies"] = array_diff( $options["{$this->prefix}taxonomies"], array( 'all' ) );
-			}
-			$prio = $this->get_all_post_priority_data( $options["{$this->prefix}posttypes"] );
+
 			if ( $this->option_isset( 'archive' ) ) {
 				$prio = array_merge( $prio, $this->get_archive_prio_data() );
 			}
@@ -1818,9 +1863,10 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 					}
 				}
 			}
-			if ( is_array( $posts ) ) {
+			if ( is_array( $posts ) && $this->remove_posts_page( $postspageid ) !== true ) {
 				array_unshift( $prio, $posts );
 			}
+
 			if ( is_array( $home ) ) {
 				array_unshift( $prio, $home );
 			}
@@ -1862,10 +1908,11 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		 * @see   https://semperplugins.com/documentation/aioseop_sitemap_xsl_url/
 		 *
 		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
 		 */
 		function get_sitemap_xsl() {
 
-			return esc_url( apply_filters( 'aioseop_sitemap_xsl_url', home_url( '/sitemap.xsl' ) ) );
+			return esc_url( apply_filters( 'aioseop_sitemap_xsl_url', aioseop_home_url( '/sitemap.xsl' ) ) );
 		}
 
 		/**
@@ -2183,15 +2230,17 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 
 		/**
 		 * Gets additional pages.
-		 *
 		 * Return data for user entered additional pages.
+		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
 		 *
 		 * @return array|mixed|void
 		 */
 		function get_addl_pages_only() {
 			$pages = array();
 			if ( ! empty( $this->options[ $this->prefix . 'addl_pages' ] ) ) {
-				$siteurl = parse_url( get_home_url() );
+				$siteurl = parse_url( aioseop_home_url() );
 				foreach ( $this->options[ $this->prefix . 'addl_pages' ] as $k => $v ) {
 					$url = parse_url( $k );
 					if ( empty( $url['scheme'] ) ) {
@@ -2236,12 +2285,15 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 		/**
 		 * Return data for user entered additional pages and extra pages.
 		 *
+		 * @since 2.3.6
+		 * @since 2.3.12.3 Refactored to use aioseop_home_url() for compatibility purposes.
+		 *
 		 * @return array|mixed|void
 		 */
 		function get_addl_pages() {
 			$home  = array();
 			$home  = array(
-				'loc'        => get_home_url(),
+				'loc'        => aioseop_home_url(),
 				'priority'   => $this->get_default_priority( 'homepage' ),
 				'changefreq' => $this->get_default_frequency( 'homepage' ),
 			);
@@ -2879,6 +2931,16 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
 				$defaults['suppress_filters'] = false;
 			}
+
+			/*
+			 * Filter to exclude password protected posts.
+			 * TODO: move to its own function and call it from here, returning whatever is appropriate.
+			 * @since 2.3.12
+			 */
+			if ( apply_filters( 'aioseop_sitemap_include_password_posts', true ) === false ) {
+				$defaults['has_password'] = false;
+			}
+
 			$args = wp_parse_args( $args, $defaults );
 			if ( empty( $args['post_type'] ) ) {
 				return apply_filters( $this->prefix . 'post_filter', array(), $args );
@@ -2912,6 +2974,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Sitemap' ) ) {
 			if ( ! empty( $q->posts ) ) {
 				$args['exclude'] = array_merge( $args['exclude'], $q->posts );
 			}
+			$this->excludes = array_merge( $args['exclude'] , $exclude_slugs ); // Add excluded slugs and IDs to class var.
 
 			$posts = get_posts( apply_filters( $this->prefix . 'post_query', $args ) );
 			if ( ! empty( $exclude_slugs ) ) {

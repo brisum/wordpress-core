@@ -594,6 +594,7 @@ class Util_Ui {
 	 *   selectbox_optgroups =>
 	 *   textbox_size =>
 	 *
+	 *   control_after => something after control to add
 	 *   description => description shown to the user below
 	 */
 	static public function config_item( $a ) {
@@ -602,7 +603,7 @@ class Util_Ui {
 		if ( !isset( $a['value'] ) || is_null( $a['value'] ) ) {
 			$a['value'] = $c->get( $a['key'] );
 			if ( is_array( $a['value'] ) )
-				$a['value'] = implode( '\n', $a['value'] );
+				$a['value'] = implode( "\n", $a['value'] );
 		}
 
 		if ( isset( $a['disabled'] ) && !is_null( $a['disabled'] ) )
@@ -666,6 +667,9 @@ class Util_Ui {
 					'disabled' => $disabled
 				);
 			}
+
+		if ( isset( $a['control_after'] ) )
+			$table_tr['html'] = $a['control_after'];
 
 		if ( isset( $a['description'] ) )
 			$table_tr['description'] = $a['description'];

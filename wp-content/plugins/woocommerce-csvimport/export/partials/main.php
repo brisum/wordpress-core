@@ -6,6 +6,12 @@
     <hr>
     <form id="exportForm" method="post">
         <input type="hidden" name="action" value="woocsv_export">
+        <?php echo __('Select a header:', 'woocommerce-csvimport'); ?>
+        <select id="header_name" name="header_name">
+            <?php foreach ($headers as $header) : ?>
+                <option value="<?php echo $header; ?>"><?php echo $header; ?></option>
+            <?php endforeach; ?>
+        </select>
         <button type="submit" class="button-primary">Export</button>
     </form>
     <progress style="display: none; width: 100%;" id="progressBar" min="0" max="<?php echo $max; ?>" value="0"/>

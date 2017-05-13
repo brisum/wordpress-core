@@ -5,7 +5,7 @@
  * Time: 20:49
  */
 
-namespace Allaerd\Woocsv;
+namespace Allaerd;
 
 
 /**

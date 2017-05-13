@@ -139,7 +139,7 @@ if ( !defined( 'W3TC' ) )
             <?php else: ?>
             <code><?php _e( 'Not installed', 'w3-total-cache' ); ?></code>
             <?php endif; ?>
-            <span class="w3tc-self-test-hint"><?php _e( '(required for HTML Tidy minifier suppport)', 'w3-total-cache' ); ?></span>
+            <span class="w3tc-self-test-hint"><?php _e( '(required for HTML Tidy minifier support)', 'w3-total-cache' ); ?></span>
         </li>
 
         <li>
@@ -164,15 +164,6 @@ if ( !defined( 'W3TC' ) )
             <code><?php _e( 'Not installed', 'w3-total-cache' ); ?></code>
             <?php endif; ?>
             <span class="w3tc-self-test-hint"><?php _e( '(required for NetDNA / MaxCDN <acronym title="Content Delivery Network">CDN</acronym> purge support)', 'w3-total-cache' ); ?></span>
-        </li>
-
-        <li>
-            <?php _e( 'Safe mode:', 'w3-total-cache' ); ?>
-            <?php if ( Util_Environment::to_boolean( ini_get( 'safe_mode' ) ) ): ?>
-            <code><?php _e( 'On', 'w3-total-cache' ); ?></code>
-            <?php else: ?>
-            <code><?php _e( 'Off', 'w3-total-cache' ); ?></code>
-            <?php endif; ?>
         </li>
 
         <li>

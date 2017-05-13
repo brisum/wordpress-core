@@ -58,7 +58,6 @@ class PMXI_API
 				<input type="text" name="<?php echo $params['field_name']; ?>" id="<?php echo sanitize_title($params['field_name']); ?>" value="<?php echo esc_attr($params['field_value']); ?>" style="width:100%;"/>
 				<?php
 				break;
-
 			case 'enum':				
 
 				$is_set_with_xpath_visible = true;
@@ -250,6 +249,19 @@ class PMXI_API
 				<?php
 				break;
 
+			case 'wp_editor':
+				?>
+				<div id="<?php echo ( user_can_richedit() ? 'postdivrich' : 'postdiv' ) . sanitize_title($params['field_name']); ?>" class="postarea">
+					<?php wp_editor( empty($params['field_value']) ? '' : $params['field_value'], sanitize_title($params['field_name']), array(
+						'teeny' => true,
+						'media_buttons' => false,
+						'textarea_name' => $params['field_name'],
+						'editor_height' => 200));
+					?>
+				</div>
+				<?php
+				break;
+
 			case 'image':
 				?>
 				<div class="input">
@@ -294,7 +306,7 @@ class PMXI_API
 
 				$is_full_width = true;
 				if ( ! empty($params['sub_fields']) ){
-					foreach ($params['sub_fields'] as $sub_field) {						
+					foreach ($params['sub_fields'] as $sub_field) {
 						if ($sub_field[0]['params']['is_main_field']){
 							PMXI_API::add_field($sub_field[0]['type'], $sub_field[0]['label'], $sub_field[0]['params']);			
 							$is_full_width = false;
@@ -373,7 +385,7 @@ class PMXI_API
 
 		global $wpdb;		
 
-		$attch = wp_all_import_get_image_from_gallery($image_name, $targetDir, $file_type);		
+		$attch = wp_all_import_get_image_from_gallery($image_name, $targetDir, $file_type);
 
 		if ( $attch != null ){			
 
@@ -382,7 +394,9 @@ class PMXI_API
 		}	
 
 		$image_filename = wp_unique_filename($targetDir, $image_name);
-		$image_filepath = $targetDir . '/' . $image_filename;		
+		$image_filepath = $targetDir . '/' . $image_filename;
+
+		$url = str_replace(" ", "%20", trim(pmxi_convert_encoding($img_url)));
 
 		// do not download images
 		if ( "yes" != $download_images ){					
@@ -401,7 +415,6 @@ class PMXI_API
 				if ($file_type == 'files'){
 					if( ! $wp_filetype = wp_check_filetype(basename($image_filepath), null )) {
 						$logger and call_user_func($logger, sprintf(__('- <b>WARNING</b>: Can\'t detect attachment file type %s', 'wp_all_import_plugin'), trim($image_filepath)));
-						$logger and !$is_cron and PMXI_Plugin::$session->warnings++;
 						@unlink($image_filepath);
 					}
 					else {
@@ -453,7 +466,6 @@ class PMXI_API
 			}																	
 
 			if ( ! $result ){
-				$url = str_replace(" ", "%20", trim(pmxi_convert_encoding($img_url)));
 				
 				$request = get_file_curl($url, $image_filepath);
 

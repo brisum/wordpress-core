@@ -104,7 +104,7 @@ Util_Ui::config_item( array(
 		'label' => __( 'Cache alias hostnames:', 'w3-total-cache' ),
 		'checkbox_label' => __( 'Enable', 'w3-total-cache' ),
 		'enabled' => !Util_Environment::is_wpmu_subdomain(),
-		'description' => __( 'If the same Wordpress content is accessed from different domains',
+		'description' => __( 'If the same WordPress content is accessed from different domains',
 			'w3-total-cache' )
 	) );
 Util_Ui::config_item( array(
@@ -262,7 +262,7 @@ Util_Ui::postbox_header( __( 'Purge Policy: ', 'w3-total-cache' ) . implode( ', 
 				<td>
 					<input type="hidden" name="pgcache__late_caching" value="0" />
 					<label><input id="pgcache_late_caching" type="checkbox" name="pgcache__late_caching" value="1"<?php checked( $this->_config->get_string( 'pgcache.engine' ) != 'file_generic' && $this->_config->get_boolean( 'pgcache.late_caching' ) ); ?> <?php disabled( $this->_config->get_string( 'pgcache.engine' ), 'file_generic' ) ?> /> <?php _e( 'Enable', 'w3-total-cache' ); ?></label>
-					<br /><span class="description"><?php _e( 'Allows overwriting of page caching key via custom filters by postponing entry extraction in the init action.', 'w3-total-cache' )?></span>
+					<br /><span class="description"><?php _e( 'Overwrites key of page caching via custom filters by postponing entry extraction during the init action.', 'w3-total-cache' )?></span>
 				</td>
 			</tr>
 			<?php
@@ -279,7 +279,7 @@ if ( $this->_config->get_string( 'pgcache.engine' ) == 'memcached' ) {
 				<th><label><?php _e( 'Compatibility mode:', 'w3-total-cache' ); ?></label></th>
 				<td>
 					<?php $this->checkbox( 'pgcache.compatibility' ) ?> <?php Util_Ui::e_config_label( 'pgcache.compatibility' ) ?></label><br />
-					<span class="description"><?php _e( 'Decreases performance by ~20% at scale in exchange for increasing interoperability with more hosting environments and WordPress idiosyncrasies. This option should be enabled for most sites', 'w3-total-cache' ); ?></span>
+					<span class="description"><?php _e( 'Decreases performance by ~20% at scale in exchange for increasing interoperability with more hosting environments and WordPress idiosyncrasies. This option should be enabled for most sites.', 'w3-total-cache' ); ?></span>
 				</td>
 			</tr>
 			<?php if ( !Util_Environment::is_nginx() ): ?>

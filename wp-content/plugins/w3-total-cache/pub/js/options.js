@@ -388,6 +388,8 @@ function w3tc_use_poll_zone(type, nonce) {
 }
 
 function w3tc_starts_with(s, starts_with) {
+	s = s.replace(/\n/g, '');
+	s = s.replace(/\s/g, '');
     return s.substr(0, starts_with.length) == starts_with;
 }
 
@@ -467,6 +469,8 @@ jQuery(function() {
             'browsercache__other__compression']);
     w3tc_toggle2('browsercache_replace',
         ['browsercache__cssjs__replace', 'browsercache__other__replace']);
+    w3tc_toggle2('browsercache_querystring',
+        ['browsercache__cssjs__querystring', 'browsercache__other__querystring']);
     w3tc_toggle2('browsercache_nocookies',
         ['browsercache__cssjs__nocookies', 'browsercache__other__nocookies']);
 
@@ -650,9 +654,9 @@ jQuery(function() {
         jQuery(this.rel).show();
     });
 
-    w3tc_input_enable('#cdn_reject_roles input[type=checkbox]', jQuery('#cdn_reject_logged_roles:checked').size());
-    jQuery('#cdn_reject_logged_roles').live('click', function() {
-        w3tc_input_enable('#cdn_reject_roles input[type=checkbox]', jQuery('#cdn_reject_logged_roles:checked').size());
+    w3tc_input_enable('#cdn_reject_roles input[type=checkbox]', jQuery('#cdn__reject__logged_roles:checked').size());
+    jQuery('#cdn__reject__logged_roles').live('click', function() {
+        w3tc_input_enable('#cdn_reject_roles input[type=checkbox]', jQuery('#cdn__reject__logged_roles:checked').size());
     });
 
     jQuery('#cdn_export_library').click(function() {

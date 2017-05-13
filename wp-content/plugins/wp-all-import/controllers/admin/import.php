@@ -1507,17 +1507,13 @@ class PMXI_Admin_Import extends PMXI_Controller_Admin {
 				$post['custom_value'] = array_intersect_key($post['custom_value'], $not_empty);
 				
 				// validate
-				if (array_keys(array_filter($post['custom_name'], 'strlen')) != array_keys(array_filter($post['custom_value'], 'strlen')) and ! count(array_filter($post['custom_format'])) ) {
-					$this->errors->add('form-validation', __('Both name and value must be set for all custom parameters', 'wp_all_import_plugin'));
-				} else {
-					foreach ($post['custom_name'] as $custom_name) {					
-						$this->_validate_template($custom_name, __('Custom Field Name', 'wp_all_import_plugin'));
-					}
-					foreach ($post['custom_value'] as $key => $custom_value) {
-						if ( empty($post['custom_format'][$key]) ) 
-							$this->_validate_template($custom_value, __('Custom Field Value', 'wp_all_import_plugin'));					
-					}
-				}	
+        foreach ($post['custom_name'] as $custom_name) {
+          $this->_validate_template($custom_name, __('Custom Field Name', 'wp_all_import_plugin'));
+        }
+        foreach ($post['custom_value'] as $key => $custom_value) {
+          if ( empty($post['custom_format'][$key]) )
+            $this->_validate_template($custom_value, __('Custom Field Value', 'wp_all_import_plugin'));
+        }
 				
 				if ( $post['type'] == "post" and $post['custom_type'] == "product" and class_exists('PMWI_Plugin')){
 					// remove entires where both custom_name and custom_value are empty 
@@ -1662,10 +1658,12 @@ class PMXI_Admin_Import extends PMXI_Controller_Admin {
 	protected function _validate_template($text, $field_title)
 	{
 		try {
-			$scanner = new XmlImportTemplateScanner();
-			$tokens = $scanner->scan(new XmlImportStringReader($text));
-			$parser = new XmlImportTemplateParser($tokens);
-			$tree = $parser->parse();
+		  if ($text != ''){
+        $scanner = new XmlImportTemplateScanner();
+        $tokens = $scanner->scan(new XmlImportStringReader($text));
+        $parser = new XmlImportTemplateParser($tokens);
+        $tree = $parser->parse();
+      }
 		} catch (XmlImportException $e) {
 			$this->errors->add('form-validation', sprintf(__('%s template is invalid: %s', 'wp_all_import_plugin'), $field_title, $e->getMessage()));
 		}

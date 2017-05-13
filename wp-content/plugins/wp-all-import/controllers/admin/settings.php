@@ -90,32 +90,43 @@ class PMXI_Admin_Settings extends PMXI_Controller_Admin {
 				if (!empty($_FILES)){
 					$file_name = $_FILES['template_file']['name'];
 					$file_size = $_FILES['template_file']['size'];
-					$tmp_name  = $_FILES['template_file']['tmp_name'];										
-					
-					if(isset($file_name)) 
-					{				
-						
+					$tmp_name  = $_FILES['template_file']['tmp_name'];
+
+					if(isset($file_name))
+					{
+
 						$filename  = stripslashes($file_name);
 						$extension = strtolower(pmxi_getExtension($filename));
-										
-						if (($extension != "txt")) 
-						{							
+
+						if (($extension != "txt"))
+						{
 							$this->errors->add('form-validation', __('Unknown File extension. Only txt files are permitted', 'wp_all_import_plugin'));
 						}
 						else {
 							$import_data = @file_get_contents($tmp_name);
 							if (!empty($import_data)){
 								$templates_data = json_decode($import_data, true);
-								
-								if (!empty($templates_data)){
-									$template = new PMXI_Template_Record();
-									foreach ($templates_data as $template_data) {
-										unset($template_data['id']);
-										$template->clear()->set($template_data)->insert();
+
+								if ( ! empty($templates_data) ){
+									$templateOptions = empty($templates_data[0]['options']) ? false : unserialize($templates_data[0]['options']);
+									if ( empty($templateOptions) ){
+										$this->errors->add('form-validation', __('The template is invalid. Options are missing.', 'wp_all_import_plugin'));
 									}
-									wp_redirect(add_query_arg('pmxi_nt', urlencode(sprintf(_n('%d template imported', '%d templates imported', count($templates_data), 'wp_all_import_plugin'), count($templates_data))), $this->baseUrl)); die();
+									else{
+										if (isset($templateOptions['is_user_export'])){
+											$this->errors->add('form-validation', __('The template you\'ve uploaded is intended to be used with WP All Export plugin.', 'wp_all_import_plugin'));
+										}
+										else{
+											$template = new PMXI_Template_Record();
+											foreach ($templates_data as $template_data) {
+												unset($template_data['id']);
+												$template->clear()->set($template_data)->insert();
+											}
+											wp_redirect(add_query_arg('pmxi_nt', urlencode(sprintf(_n('%d template imported', '%d templates imported', count($templates_data), 'wp_all_import_plugin'), count($templates_data))), $this->baseUrl)); die();
+										}
+									}
 								}
-								else $this->errors->add('form-validation', __('Wrong imported data format', 'wp_all_import_plugin'));							
+								else $this->errors->add('form-validation', __('Wrong imported data format', 'wp_all_import_plugin'));
 							}
 							else $this->errors->add('form-validation', __('File is empty or doesn\'t exests', 'wp_all_import_plugin'));
 						}
@@ -130,7 +141,7 @@ class PMXI_Admin_Settings extends PMXI_Controller_Admin {
 				if (empty($templates_ids)) {
 					$this->errors->add('form-validation', __('Templates must be selected', 'wp_all_import_plugin'));
 				}
-				
+
 				if ( ! $this->errors->get_error_codes()) { // no validation errors detected
 					if ($this->input->post('delete_templates')){
 						$template = new PMXI_Template_Record();
@@ -144,16 +155,16 @@ class PMXI_Admin_Settings extends PMXI_Controller_Admin {
 						$template = new PMXI_Template_Record();
 						foreach ($templates_ids as $template_id) {
 							$export_data[] = $template->clear()->getBy('id', $template_id)->toArray(TRUE);
-						}	
-						
+						}
+
 						$uploads = wp_upload_dir();
 						$targetDir = $uploads['basedir'] . DIRECTORY_SEPARATOR . PMXI_Plugin::TEMP_DIRECTORY;
 						$export_file_name = "templates_".uniqid().".txt";
 						file_put_contents($targetDir . DIRECTORY_SEPARATOR . $export_file_name, json_encode($export_data));
-						
+
 						PMXI_download::csv($targetDir . DIRECTORY_SEPARATOR . $export_file_name);
-						
-					}				
+
+					}
 				}
 			}
 		}

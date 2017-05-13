@@ -7,10 +7,10 @@
  	Author:					Allaerd Mensonides
  	Author URI:				https://allaerd.org
 
- 	Version:				3.3.0
+ 	Version:				3.3.5
 
 	Requires at least: 		4.0
-	Tested up to: 			4.6
+	Tested up to: 			4.7
 
 	License: GPLv2 or later
 
@@ -23,37 +23,51 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WOOCSV_PLUGIN_PATH', dirname(__FILE__));
+define('ALLAERD_IMPORTER_PLUGIN_PATH', dirname(__FILE__));
 
 
 /********
  *
  * NEW style
  *
-********/
+ ********/
+$paths = array (
+    '/import/include/abstracts/',
+    '/import/include/interfaces/',
+    '/import/include/classes/',
+    '/import/include/products/',
+    '/export/include/abstracts/',
+    '/export/include/interfaces/',
+    '/export/include/classes/',
+    '/export/include/products/',
+    '/extensions/',
+);
 
-//importer
-//include dirname(__FILE__) . '/import/Importer.php';
-//include dirname(__FILE__) . '/import/abstracts/AsyncRequest.php';
-//include dirname(__FILE__) . '/import/classes/Scheduler.php';
-//include dirname(__FILE__) . '/import/classes/Admin.php';
-
-//exporter
-
+foreach ($paths as $path) {
+    $files = glob(dirname(__FILE__) . $path . '*.php');
+    foreach ($files as $file) {
+        include $file;
+    }
+}
 
 
 //common
-include dirname(__FILE__) . '/src/Allaerd/UploadErrorMessages.php';
 include dirname(__FILE__) . '/src/Allaerd/UserRoles.php';
+include dirname(__FILE__) . '/src/Allaerd/UploadErrorMessages.php';
 
-//function aem_importer() {
-//    return Allaerd\Importer::instance();
+//importer
+include dirname(__FILE__) . '/import/Importer.php';
+
+////exporter
+include dirname(__FILE__) . '/export/Exporter.php';
+
+
+//function allaerd_importer()
+//{
+//    return Allaerd\Import\Importer::instance();
 //}
 //
-//
-//// Global for backwards compatibility.
-//$GLOBALS['aem_importer'] = aem_importer();
-
+//allaerd_importer();
 
 /********
  * OLD style
@@ -70,20 +84,8 @@ include dirname(__FILE__) . '/include/class-woocsv-schedule-import.php';
 include dirname(__FILE__) . '/include/LoggerInterface.php';
 include dirname(__FILE__) . '/include/LogToFile.php';
 
-//exporter
-include dirname(__FILE__) . '/export/interfaces/productsInterface.php';
-include dirname(__FILE__) . '/export/interfaces/exportInterface.php';
-include dirname(__FILE__) . '/export/interfaces/writerInterface.php';
-include dirname(__FILE__) . '/export/include/woocsvExport.php';
-include dirname(__FILE__) . '/export/include/woocsvExportAdmin.php';
-include dirname(__FILE__) . '/export/include/woocsvExportProduct.php';
-include dirname(__FILE__) . '/export/include/ajaxExport.php';
-include dirname(__FILE__) . '/export/include/csvWriter.php';
-include dirname(__FILE__) . '/export/include/woocsvAttributes.php';
-include dirname(__FILE__) . '/export/products/simple.php';
-include dirname(__FILE__) . '/export/products/variable.php';
-include dirname(__FILE__) . '/export/products/variation.php';
-include dirname(__FILE__) . '/export/exporter.php';
+//extensions
+include_once dirname(__FILE__) . '/extensions/import_wc_vendors.php';
 
 /**
  * ajax actions
@@ -100,6 +102,8 @@ add_action('wp_ajax_start_batch', 'woocsv_batches::start');
 /**
  * multi language
  */
+//todo
+//$image = str_replace( ' ', '%20', $image );
 
 load_plugin_textdomain('woocommerce-csvimport', false, dirname(plugin_basename(__FILE__)) . '/languages/');
 
@@ -109,6 +113,19 @@ $woocsv_product = '';
 
 // the good hook for loading add-ons. others will be removed
 do_action('woocsv_after_init');
+
+
+function aem_dump ( $message, $die = FALSE ) {
+    echo '<pre>';
+    var_dump($message);
+    //echo json_encode($message);
+    echo '</pre>';
+
+    if ($die) {
+        wp_die();
+    }
+
+}
 
 //helper functions
 function aem_helper_date($timestamp = null)

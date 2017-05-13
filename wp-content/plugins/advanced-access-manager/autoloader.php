@@ -8,7 +8,7 @@
  */
 
 /**
- * Project autloader
+ * Project autoloader
  * 
  * @package AAM
  * @author Vasyl Martyniuk <vasyl@vasyltech.com>
@@ -29,7 +29,7 @@ class AAM_Autoloader {
     public static function add($classname, $filepath) {
         self::$classmap[$classname] = $filepath;
     }
-
+    
     /**
      * Autoloader for project Advanced Access Manager
      *

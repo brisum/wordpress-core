@@ -4,7 +4,7 @@
  * AIOSEOP Updates class.
  * @author Michael Torbert.
  * @author Semper Fi Web Design.
- * @copyright http://semperplugins.com
+ * @copyright https://semperplugins.com
  * @version 1.0.0
  */
 if ( typeof aiosp_data != 'undefined' ) {
@@ -245,26 +245,69 @@ jQuery( document ).ready(function() {
 });
 
 /**
- * @since 1.0.0
- * @return boolean.
+ * @summary Custom jQuery plugin that enables image uploader in wordpress.
+ * 
+ * @since 2.3.13
+ * @see http://www.webmaster-source.com/2013/02/06/using-the-wordpress-3-5-media-uploader-in-your-plugin-or-theme/
  */
-jQuery( document ).ready(function() {
-	var image_field;
-	jQuery( '.aioseop_upload_image_button' ).click(function() {
-		window.send_to_editor = aioseopNewSendToEditor;
-		image_field = jQuery( this ).next();
-		formfield = image_field.attr( 'name' );
-		tb_show( '', 'media-upload.php?type=image&amp;TB_iframe=true' );
-		return false;
-	});
-	aioseopStoreSendToEditor 	= window.send_to_editor;
-	aioseopNewSendToEditor		= function(html) {
-		imgurl = jQuery( 'img',html ).attr( 'src' );
-		if ( typeof( imgurl ) !== undefined )
-			image_field.val( imgurl );
-		tb_remove();
-		window.send_to_editor = aioseopStoreSendToEditor;
-	};
+jQuery.fn.aioseopImageUploader = function() {
+    // Keep reference to this.
+    var self = this;
+
+    // Set input target when to update image url value
+    self.target = jQuery( self ).next();
+
+    // Uploader per image button
+    // * Having only one uploader was causing problems when multiple image buttons where in place
+    self.uploader = wp.media({
+        title: 'Choose Image',
+        button: {
+            text: 'Choose Image'
+        },
+        multiple: false
+    });
+
+    /**
+     * Event handler that will be called when an image is selected from media uploader.
+     */
+    self.onSelect = function() {
+        if ( self.target.length >= 0 )
+            jQuery( self.target ).val(
+                self.uploader.state().get( 'selection' ).first().toJSON().url
+            );
+    }
+
+    /**
+     * Click event handler.
+     * @param object e Click event.
+     */
+    self.onClick = function( e ) {
+        e.preventDefault();
+        self.uploader.open();
+    }
+
+    //Set uploader select handler
+    self.uploader.on( 'select', self.onSelect );
+
+    // Set click handler
+    jQuery( self ).click( self.onClick );
+};
+
+/**
+ * @summary Javascript for using WP media uploader. Indentifies which DOM should use custom uploader plugin.
+ *
+ * @see http://www.webmaster-source.com/2013/02/06/using-the-wordpress-3-5-media-uploader-in-your-plugin-or-theme/
+ * @since ?
+ * @since 2.3.11.2 Use WP 3.5 new media uploader
+ * @since 2.3.13 Fixed issue #[740](https://github.com/semperfiwebdesign/all-in-one-seo-pack/issues/740)
+ *
+ */
+jQuery(document).ready(function($){
+
+    jQuery( '.aioseop_upload_image_button' ).each(function() {
+        jQuery( this ).aioseopImageUploader();
+    });
+
 });
 
 /**
@@ -272,7 +315,7 @@ jQuery( document ).ready(function() {
  *
  * props to commentluv for this fix
  * @author commentluv.
- * @link http://core.trac.wordpress.org/ticket/16972
+ * @link https://core.trac.wordpress.org/ticket/16972
  * @since 1.0.0
  */
 jQuery( document ).ready(function() {

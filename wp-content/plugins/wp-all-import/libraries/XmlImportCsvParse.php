@@ -975,9 +975,18 @@ class PMXI_CsvParser
         if ( ! empty($_GET['import_id']) ) $import_id = $_GET['import_id'];        
 
         $create_new_headers = apply_filters('wp_all_import_auto_create_csv_headers', false, $import_id);
+        $replace_first_number = apply_filters('wp_all_import_replace_first_number_in_headers', true, $import_id);
+        $skip_x_rows = apply_filters('wp_all_import_skip_x_csv_rows', false, $import_id);
         $headers = array();    
         while ($keys = fgetcsv($res, $l, $d, $e)) {
-            
+            if ($skip_x_rows !== false && $skip_x_rows > $c){
+                $c++;
+                continue;
+            }
+            if ($skip_x_rows !== false && $skip_x_rows <= $c){
+                $skip_x_rows = false;
+                $c = 0;
+            }
             $empty_columns = 0;
             foreach ($keys as $key) {
                 if ($key == '') $empty_columns++;
@@ -988,17 +997,25 @@ class PMXI_CsvParser
             if ($c == 0) {
                 $buf_keys = $keys;
                 foreach ($keys as $key => $value) {    
-                    if (!$create_new_headers and (preg_match('%\W(http:|https:|ftp:)$%i', $value) or is_numeric($value))) $create_new_headers = true;                                                                    
-                    $value = trim(strtolower(preg_replace('/^[0-9]{1}/','el_', preg_replace('/[^a-z0-9_]/i', '', $value))));
+                    if (!$create_new_headers and (preg_match('%\W(http:|https:|ftp:)$%i', $value) or is_numeric($value))) $create_new_headers = true;
+                    if ($replace_first_number){
+                        $value = trim(strtolower(preg_replace('/^[0-9]{1}/','el_', preg_replace('/[^a-z0-9_]/i', '', $value))));
+                    }
+                    else{
+                        $value = preg_replace('/[^a-z0-9_]/i', '', $value);
+                        if (preg_match('/^[0-9]{1}/', $value)){
+                            $value = 'el_' . trim(strtolower($value));
+                        }
+                    }
                     $value = (!empty($value)) ? $value : 'undefined' . $key;
-                    if (empty($headers[$value])) 
+                    if (empty($headers[$value]))
                         $headers[$value] = 1;
                     else
                         $headers[$value]++;
 
                     $keys[$key] = ($headers[$value] === 1) ? $value : $value . '_' . $headers[$value];
                 }            
-                $this->headers = $keys;                                
+                $this->headers = $keys;
                 if ($create_new_headers){ 
                     $this->createHeaders('column');      
                     $keys = $buf_keys;

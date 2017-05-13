@@ -135,7 +135,6 @@ class woocsv_import_admin
 			) {
 //			@since 3.1.0
             //@todo create batch allready!
-
 			//set the active header
 			$header = $woocsv_import->headers[$_POST['header_name']];
             $header_name = $_POST['header_name'];
@@ -175,7 +174,7 @@ class woocsv_import_admin
 	public static function save_header()
 	{
 		global $woocsv_import;
-		$headerOrder = '';
+		$headerOrder = array();
 		foreach ($_POST as $key=>$value) {
 			if (preg_match("/fields_[0-9]/", $key, $matches)) {
 				$headerOrder[] = $value;

@@ -21,7 +21,7 @@ class AAM_Core_Config {
      * aam-utilities slug is used because AAM Utilities with v3.4 became a core
      * feature instead of independent extension.
      */
-    const CONFIG_OPTION = 'aam-utilities';
+    const OPTION = 'aam-utilities';
     
     /**
      * Core config
@@ -40,7 +40,11 @@ class AAM_Core_Config {
      * @access public
      */
     public static function bootstrap() {
-        self::$config = AAM_Core_API::getOption(self::CONFIG_OPTION, array());
+        if (is_multisite()) {
+            self::$config = AAM_Core_API::getOption(self::OPTION, array(), 'site');
+        } else {
+            self::$config = AAM_Core_Compatibility::getConfig();
+        }
     }
     
     /**
@@ -56,12 +60,12 @@ class AAM_Core_Config {
      */
     public static function get($option, $default = null) {
         if (isset(self::$config[$option])) {
-            $value = self::$config[$option];
-        } else { //try to get option from ConfigPress
-            $value = self::readConfigPress($option, $default);
+            $response = self::$config[$option];
+        } else {
+            $response = self::readConfigPress($option, $default);
         }
         
-        return apply_filters('aam-filter-config-get', $value, $option);
+        return apply_filters('aam-filter-config-get', $response, $option);
     }
     
     /**
@@ -78,7 +82,29 @@ class AAM_Core_Config {
         self::$config[$option] = $value;
         
         //save config to database
-        return AAM_Core_API::updateOption(self::CONFIG_OPTION, self::$config);
+        if (is_multisite()) {
+            $result = AAM_Core_API::updateOption(self::OPTION, self::$config, 'site');
+        } else {
+            $result = AAM_Core_API::updateOption(self::OPTION, self::$config);
+        }
+        
+        
+        return $result;
+    }
+    
+    /**
+     * 
+     * @param type $option
+     */
+    public static function delete($option) {
+        if (isset(self::$config[$option])) {
+            unset(self::$config[$option]);
+            if (is_multisite()) {
+                AAM_Core_API::updateOption(self::OPTION, self::$config, 'site');
+            } else {
+                AAM_Core_API::updateOption(self::OPTION, self::$config);
+            }
+        }
     }
     
     /**
@@ -93,7 +119,9 @@ class AAM_Core_Config {
      * @static
      */
     protected static function readConfigPress($param, $default = null) {
-        if (class_exists('ConfigPress')) {
+        if (defined('AAM_CONFIGPRESS')) {
+            $config = AAM_ConfigPress::get('aam.' . $param, $default);
+        } elseif (class_exists('ConfigPress')) {
             $config = ConfigPress::get('aam.' . $param, $default);
         } else {
             $config = $default;

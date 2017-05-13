@@ -358,7 +358,7 @@ class Cdn_Core {
 					'container' => $this->_config->get_string( 'cdn.azure.container' ),
 					'cname' => $this->_config->get_array( 'cdn.azure.cname' ),
 					'ssl' => $this->_config->get_string( 'cdn.azure.ssl' ),
-					'compression' => $compression
+					'compression' => false
 				);
 				break;
 
@@ -622,7 +622,11 @@ class Cdn_Core {
 		if ( is_file( $file ) )
 			return $file;
 
-		return  rtrim( Util_Environment::document_root(), "/" ) . '/' . ltrim( $file, "/" );
+		if ( DIRECTORY_SEPARATOR != '/' )
+			$file = str_replace( '/', DIRECTORY_SEPARATOR, $file );
+
+		return  rtrim( Util_Environment::document_root(), '/\\' ) .
+			DIRECTORY_SEPARATOR . ltrim( $file, '/\\' );
 	}
 
 	/**

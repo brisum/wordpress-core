@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: allaerd
- * Date: 16/02/16
- * Time: 07:20
- */
 
-namespace Allaerd\Woocsv;
+namespace Allaerd;
 
 interface Logger
 {

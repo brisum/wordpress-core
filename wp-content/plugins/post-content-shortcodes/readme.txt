@@ -1,9 +1,9 @@
 === Post Content Shortcodes ===
 Contributors: cgrymala
 Tags: shortcode, clone, syndication, post content, post list
-Requires at least: 4.0
-Tested up to: 4.3
-Stable tag: 0.5.6
+Requires at least: 4.3
+Tested up to: 4.7.3
+Stable tag: 1.0
 
 Adds shortcodes to display the content of a post or a list of posts.
 
@@ -15,40 +15,47 @@ This plugin adds two shortcodes that allow you to display either the content of 
 
 The first shortcode is the `[post-content]` shortcode. Using that shortcode will allow you to display the content of one post within another post. This shortcode requires a single attribute with a key of "id". To use this shortcode to display the content of a post or page with an ID of 25, you would use this shortcode like `[post-content id=25]`. This shortcode also accepts the following optional arguments:
 
-* post_name => null - The slug of the post that you want to pull. This can be used in place of the `id` attribute
-* show_image => false - Determines whether or not to display the featured image (if so, this appears before the content)
-* show_excerpt => false - Determines whether to default to showing the post excerpt instead of the post content (still falls back to post content if the excerpt is not set)
-* excerpt_length => 0 - If you would like to limit the length of the content/excerpt shown on the page, specify the maximum number of words that should be shown (a read more link will automatically be appended to any entries that exceed that limit).
-* image_width => 0 - The width, in pixels, to which the featured image should be sized
-* image_height => 0 - The height, in pixels, to which the featured image should be sized
-* show_title => false - Whether or not to show the post title at the top of the content. By default, the title is wrapped in `<h2>` tags, but you can use the `post-content-shortcodes-title` filter to modify the title output.
+* `post_name` => `null` - The slug of the post that you want to pull. This can be used in place of the `id` attribute
+* `show_image` => `false` - Determines whether or not to display the featured image (if so, this appears before the content)
+* `show_excerpt` => `false` - Determines whether to default to showing the post excerpt instead of the post content (still falls back to post content if the excerpt is not set)
+* `excerpt_length` => `0` - If you would like to limit the length of the content/excerpt shown on the page, specify the maximum number of words that should be shown (a read more link will automatically be appended to any entries that exceed that limit).
+* `image_width` => `0` - The width, in pixels, to which the featured image should be sized
+* `image_height` => `0` - The height, in pixels, to which the featured image should be sized
+* `show_title` => `false` - Whether or not to show the post title at the top of the content. By default, the title is wrapped in `<h2>` tags, but you can use the `post-content-shortcodes-title` filter to modify the title output.
+* `link_image` => `false` (set this to true/1 if you would like to wrap the featured image in a link to the post) - Added in 0.6
+* `view_template` => `null` (if you are using the [Views](https://wp-types.com/) plugin, you can set the ID of an existing Content Template to be used in-place of the default list item output) - Added in 0.6
+* `shortcodes` => `false` - By default, this plugin strips shortcodes out of the post content/excerpt. If you would like to attempt to process/render shortcodes in the content, set this flag to true.
 
 **Post List**
 
 The second shortcode is the `[post-list]` shortcode. This shortcode does not require any arguments, but will accept the following arguments (most of which are the default arguments used with `get_posts()`):
 
-* numberposts => -1
-* offset => 0
-* category => null (can accept category slug [with quotes] or category ID [without quotes])
-* orderby => title
-* order => asc
-* include => null
-* exclude => null
-* meta_key => null
-* meta_value => null
-* post_type => 'post'
-* post_mime_type => null
-* post_parent => null
-* post_status => 'publish'
-* exclude_current => true
-* ~~blog_id => 0 (the numeric ID of the site from which to pull the posts)~~
-* blog => null (can be set to the numeric ID or the blog name [slug] of the site from which to pull the posts - this replaces the old blog_id attribute)
-* show_image => false
-* show_excerpt => false
-* excerpt_length => 0
-* image_width => 0
-* image_height => 0
-* shortcodes => false (determines whether the plugin should attempt to allow shortcodes to be processed within the excerpt/content)
+* `numberposts` => `-1`
+* `offset` => `0`
+* `category` => `null` (can accept category slug [with quotes] or category ID [without quotes])
+* `orderby` => `title`
+* `order` => `asc`
+* `include` => `null`
+* `exclude` => `null`
+* `meta_key` => `null`
+* `meta_value` => `null`
+* `post_type` => `'post'`
+* `post_mime_type` => `null`
+* `post_parent` => `null`
+* `post_status` => `'publish'`
+* `exclude_current` => `true`
+* --blog_id => 0 (the numeric ID of the site from which to pull the posts)--
+* `blog` => `null` (can be set to the numeric ID or the blog name [slug] of the site from which to pull the posts - this replaces the old blog_id attribute)
+* `show_image` => `false`
+* `show_excerpt` => `false`
+* `excerpt_length` => `0`
+* `image_width` => `0`
+* `image_height` => `0`
+* `tax_name` => `null` (the name of a taxonomy - e.g. "tag", "category", etc. - to be used to filter the list of posts) - Added in 0.6
+* `tax_term` => `null` (the list of term IDs or slugs to filter the list of posts - multiple IDs or slugs can be separated by spaces) - Added in 0.6
+* `link_image` => `false` (set this to true/1 if you would like to wrap the featured image in a link to the post) - Added in 0.6
+* `ignore_protected` => `false` (set this to true/1 if you would like the post list to exclude any password-protected posts) - Added in 0.6
+* `view_template` => `null` (if you are using the [Views](https://wp-types.com/) plugin, you can set the ID of an existing Content Template to be used in-place of the default list item output) - Added in 0.6
 
 The first 13 arguments are standard arguments for the `get_posts()` function.
 
@@ -58,7 +65,17 @@ The `blog_id` argument is also not standard. That argument allows you to pull a 
 
 The `show_image`, `image_width` and `image_height` arguments only apply to the `post-list` shortcode. They determine whether to display the featured image and how to display it for each post within the list. If the `image_width` and `image_height` arguments are both set to 0 (which is the default), the "thumbnail" size will be used (assuming the `show_image` argument is set to 1 or "true"). If only one of the `image_width` or `image_height` arguments are set, the other argument will be set to 999999 to ensure that the specified dimension is met.
 
-The 'show_excerpt` and `excerpt_length` arguments also apply to the post-list shortcode. If you set `show_excerpt` to 1 or "true", the post excerpt will be shown if it exists. If it doesn't exist (or is empty), the post content will be shown (with HTML stripped out of it). You can truncate the length of the excerpts that are shown in the post list by setting the `excerpt_length` value. The `excerpt_length` is measured in words, so if you would like each excerpt to display no more than 50 words, you would set the `excerpt_length` parameter to 50. If you leave it set to 0 (which is the default), the entire excerpt or content will be shown in the post list. In the `post-list` shortcode, if `show_excerpt` is set to 0 or false, no content will be shown in the list (as opposed to the behavior of the `show_excerpt` parameter in the `post-content` shortcode).
+The `show_excerpt` and `excerpt_length` arguments also apply to the post-list shortcode. If you set `show_excerpt` to 1 or "true", the post excerpt will be shown if it exists. If it doesn't exist (or is empty), the post content will be shown (with HTML stripped out of it). You can truncate the length of the excerpts that are shown in the post list by setting the `excerpt_length` value. The `excerpt_length` is measured in words, so if you would like each excerpt to display no more than 50 words, you would set the `excerpt_length` parameter to 50. If you leave it set to 0 (which is the default), the entire excerpt or content will be shown in the post list. In the `post-list` shortcode, if `show_excerpt` is set to 0 or false, no content will be shown in the list (as opposed to the behavior of the `show_excerpt` parameter in the `post-content` shortcode).
+
+The `view_template` argument can be a bit complicated to get working properly, and is still a bit *experimental*. Please use it at your own risk. Unfortunately, the standard [wpv-post-featured-image] and [wpv-post-url] shortcodes (and, by extension, the [wpv-post-link] shortcode) do not work properly, especially when trying to display content from another site in the network. There are three extra shortcodes created for use in your Content Template, the first two of which replace the [wpv-post-featured-image] and [wpv-post-url] shortcodes:
+
+* `[pcs-thumbnail]` - will output the post thumbnail (at the width/height you set in the post-content/post-list shortcode attributes)
+* `[pcs-post-url]` - will return/output the URL to the post
+* `[pcs-entry-classes]` - will add some additional classes to the entry wrapper. Accepts 2 parameters:
+    * `classes` - a space-separated list of the CSS classes you want to apply to the entry
+	* `columns` - a numerical value representing how many columns you want in the list (which will automatically add column-1, column-2, etc. to the list of entry classes, as well as adding a class of "first" to the first item in each row - for instance, if you have 6 items, and you use `[pcs-entry-classes classes="foo bar entry" columns="3"]`, the class list for the first and fourth items will be `foo bar entry column-1 first`, the class list for the second and fifth items will be `foo bar entry column-2` and the class list for the third and sixth items will be `foo bar entry column-3`)
+
+I have created a Gist showing a [simple example of a Views Content Template used with a Post List widget](https://gist.github.com/cgrymala/5e6b7b36d2e8c8eaea33).
 
 To read more about the other arguments, please [visit the codex page for the `get_posts()` function](http://codex.wordpress.org/Function_Reference/get_posts).
 
@@ -175,7 +192,7 @@ There are some filters available within the plugin that can alter the HTML gener
 
 = Are there any other filters in the plugin? =
 
-Yes. 
+Yes.
 
 * If the `[post-list]` shortcode retrieves an empty list of posts/pages, it will normally return an empty string (so as not to disrupt the flow of the page). However, you can have the shortcode output a custom error message by hooking into the `post-content-shortcodes-no-posts-error` filter.
 * If you would like to use a different set of default values for the shortcode arguments, you can hook into the `post-content-shortcodes-defaults` filter. The array of default arguments is passed to that filter before it gets used.
@@ -183,6 +200,13 @@ Yes.
 * If you would like to change the "Read More" link used in the `[post-content]` shortcode (if you are limiting the length of the content/excerpt), you can use the `post-content-shortcodes-read-more` filter to do so.
 * If you would like to modify the class used on the featured image (if appropriate), you can use the `post-content-shortcodes-image-class` to do that.
 * By default, the plugin uses 'thumbnail' as the size of the featured image. If you would like to use a different registered size, you can change that with the `post-content-shortcodes-default-image-size` filter.
+
+There are also four actions that are executed (as of 0.6) within the plugin:
+
+* `pcs_starting_post_content` - Fires when the post_content() function is entered; allows you to selectively add any special filters, etc. that need to be added just for use within the post-content shortcode.
+* `pcs_ending_post_content` - Fires before the output from the post_content() function is returned; allows you to remove any filters that you may have added in the `pcs_starting_post_content` action.
+* `pcs_starting_post_list` - Fires when the post_list() function is entered; allows you to selectively add any special filters, etc. that need to be added just for use within the post-list shortcode.
+* `pcs_ending_post_list` - Fires before the output from the post_list() function is returned; allows you to remove any filters you may have added in the `pcs_starting_post_list` action.
 
 = Why isn't the current post included in the list of posts? =
 
@@ -218,7 +242,38 @@ Yes. The way this plugin works, there is no distinction between multi-network & 
 
 There is a known issue where HTML (especially [caption] shortcodes) within the excerpt can break the entire page. In order to avoid this, be sure to place the <!-- more --> tag above the [caption] shortcode within the posts being pulled into the post-list shortcode.
 
+= Why are the thumbnails/links wrong when using a Content Template from the Views plugin? =
+
+Unfortunately, because of the way the Views plugin processes posts, the [wpv-post-url], [wpv-post-link] and [wpv-post-featured-image] shortcodes do not work properly. Instead, you will need to use the [pcs-post-url] and [pcs-thumbnail] shortcodes.
+
+== Screenshots ==
+
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles enabled
+1. An example of the post-content shortcode being used within the Twenty Seventeen theme
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles disabled
+
 == Changelog ==
+
+= 1.0 =
+
+* Fixes PHP fatal error thanks to GitHub user [@stefanogualdi](https://github.com/stefanogualdi)
+* Fixes other minor warnings and errors
+* Adds plugin textdomain to all translatable strings
+* Fixes some other minor PHP warnings
+* Re-organizes code within plugin
+* Fixes some issues with the way individual site options are handled in multisite
+
+= 0.6 =
+
+* Adds compatibility with Views plugin
+* Adds new `link_image` attribute to wrap post thumbnail in a link (h/t @vince102, @MadManSam and @soft4tec)
+* Adds new `tax_term` and `tax_name` attributes to help filter the list by taxonomy
+* Adds new `ignore_protected` attribute to leave password-protected posts out of the post-list (h/t @kapsol)
+* Adds new actions that fire at the beginning and end of the post_list and post_content functions (`pcs_starting_post_list`, `pcs_ending_post_list`, `pcs_starting_post_content` and `pcs_ending_post_content`)
+
+= 0.5.5 =
+
+* Fixes issue that stopped widgets from working in WordPress 4.3
 
 = 0.5 =
 
@@ -305,6 +360,14 @@ This is the first version of this plugin
 
 == Upgrade Notice ==
 
+= 0.6 =
+
+* Implements new attributes and allows usage of Views Content Templates to format output
+
+= 0.5.5 =
+
+* Fixes issue that stopped widgets from working in WordPress 4.3
+
 = 0.5 =
 
 * Finally fixes stupid bug that stopped dates from showing up in Post List shortcode/widget
@@ -339,5 +402,3 @@ This is the first version of this plugin
 == To Do ==
 
 * Add AJAX features to allow user to choose from a list of posts/sites, instead of requiring them to manually enter the ID
-* Add ability to wrap featured images with a link
-* Add ability to paginate the [post-list] shortcode

@@ -632,8 +632,8 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 		// Get types
 		$product_type 	= 'simple';
 
-		if ($this->options['update_all_data'] == 'no' and ! $this->options['is_update_product_type'] and ! $is_new_product ){			
-			$product 	  = get_product($pid);			
+		if ($this->options['update_all_data'] == 'no' and ! $this->options['is_update_product_type'] and ! $is_new_product ){
+            $product 	  = WC()->product_factory->get_product($pid);
 			if ( ! empty($product->product_type) ) $product_type = $product->product_type;
 		}		
 
@@ -718,7 +718,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 						}
 						else
 						{						
-							$t_shipping_class = is_exists_term( (int) $p_shipping_class, 'product_shipping_class', 0);	
+							$t_shipping_class = is_exists_term( (int) $p_shipping_class, 'product_shipping_class');
 												
 							if ( ! empty($t_shipping_class) and ! is_wp_error($t_shipping_class) )
 							{												
@@ -745,7 +745,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 				}
 				else{
 					
-					$t_shipping_class = is_exists_term($product_shipping_class[$i], 'product_shipping_class', 0);	
+					$t_shipping_class = is_exists_term($product_shipping_class[$i], 'product_shipping_class');
 					
 					if ( ! empty($t_shipping_class) and ! is_wp_error($t_shipping_class) )
 					{
@@ -753,7 +753,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 					}
 					else
 					{
-						$t_shipping_class = is_exists_term(htmlspecialchars(strtolower($product_shipping_class[$i])), 'product_shipping_class', 0);	
+						$t_shipping_class = is_exists_term(htmlspecialchars(strtolower($product_shipping_class[$i])), 'product_shipping_class');
 						
 						if ( ! empty($t_shipping_class) and ! is_wp_error($t_shipping_class) )
 						{
@@ -1202,6 +1202,39 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 				
 		}			
 
+		// Update product visibility term WC 3.0.0
+        if ( version_compare(WOOCOMMERCE_VERSION, '3.0') >= 0 ) {
+            if ( pmwi_is_update_taxonomy($articleData, $this->options, 'product_visibility') ){
+                $associate_terms = array();
+                if ($is_featured == "yes"){
+                    $featured_term = get_term_by( 'name', 'featured', 'product_visibility' );
+                    if (!empty($featured_term) && !is_wp_error($featured_term)){
+                        $associate_terms[] = $featured_term->term_taxonomy_id;
+                    }
+                }
+                if (in_array($product_visibility[$i], array('hidden', 'catalog'))){
+                    $exclude_search_term = get_term_by( 'name', 'exclude-from-search', 'product_visibility' );
+                    if (!empty($exclude_search_term) && !is_wp_error($exclude_search_term)){
+                        $associate_terms[] = $exclude_search_term->term_taxonomy_id;
+                    }
+                }
+                if (in_array($product_visibility[$i], array('hidden', 'search'))){
+                    $exclude_catalog_term = get_term_by( 'name', 'exclude-from-catalog', 'product_visibility' );
+                    if (!empty($exclude_catalog_term) && !is_wp_error($exclude_catalog_term)){
+                        $associate_terms[] = $exclude_catalog_term->term_taxonomy_id;
+                    }
+                }
+                $_stock_status = get_post_meta( $pid, '_stock_status', true);
+                if ( $_stock_status == 'outofstock' ){
+                    $outofstock_term = get_term_by( 'name', 'outofstock', 'product_visibility' );
+                    if (!empty($outofstock_term) && !is_wp_error($outofstock_term)){
+                        $associate_terms[] = $outofstock_term->term_taxonomy_id;
+                    }
+                }
+                $this->associate_terms( $pid, $associate_terms, 'product_visibility' );
+            }
+        }
+
 		// prepare bulk SQL query
 		//$this->executeSQL();
 
@@ -1278,7 +1311,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 			{
 				$gallery = $tmp_gallery;
 			}
-			update_post_meta( $post_to_update_id, '_product_image_gallery', implode(",", $gallery) );
+			$this->pushmeta( $post_to_update_id, '_product_image_gallery', implode(",", $gallery) );
 			// [\update product gallery]
 
 			wc_delete_product_transients($importData['pid']);		
@@ -1340,55 +1373,46 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 	protected function associate_terms($pid, $assign_taxes, $tx_name, $logger = false){					
 
 		$terms = wp_get_object_terms( $pid, $tx_name );
-		$term_ids = array();        
+        $term_ids = array();
 
-		$assign_taxes = (is_array($assign_taxes)) ? array_filter($assign_taxes) : false;   
+        $assign_taxes = (is_array($assign_taxes)) ? array_filter($assign_taxes) : false;
 
-		if ( ! empty($terms) ){
-			if ( ! is_wp_error( $terms ) ) {				
-				foreach ($terms as $term_info) {
-					$term_ids[] = $term_info->term_taxonomy_id;
-					delete_woocommerce_term_meta( $term_info->term_taxonomy_id, 'product_ids' );
-					$this->wpdb->query(  $this->wpdb->prepare("UPDATE {$this->wpdb->term_taxonomy} SET count = count - 1 WHERE term_taxonomy_id = %d", $term_info->term_taxonomy_id) );
-				}				
-				$in_tt_ids = "'" . implode( "', '", $term_ids ) . "'";				
-				$this->wpdb->query( $this->wpdb->prepare( "DELETE FROM {$this->wpdb->term_relationships} WHERE object_id = %d AND term_taxonomy_id IN ($in_tt_ids)", $pid ) );
-				delete_transient( 'wc_ln_count_' . md5( sanitize_key( $tx_name ) . sanitize_key( $term_info->term_taxonomy_id ) ) );
-				//wp_update_term_count( $term_ids, $tx_name );
-				clean_term_cache($term_ids, '', false);
-			}
-		}
+        if ( ! empty($terms) ){
+            if ( ! is_wp_error( $terms ) ) {
+                foreach ($terms as $term_info) {
+                    $term_ids[] = $term_info->term_taxonomy_id;
+                    $this->wpdb->query(  $this->wpdb->prepare("UPDATE {$this->wpdb->term_taxonomy} SET count = count - 1 WHERE term_taxonomy_id = %d", $term_info->term_taxonomy_id) );
+                }
+                $in_tt_ids = "'" . implode( "', '", $term_ids ) . "'";
+                $this->wpdb->query( $this->wpdb->prepare( "DELETE FROM {$this->wpdb->term_relationships} WHERE object_id = %d AND term_taxonomy_id IN ($in_tt_ids)", $pid ) );
+            }
+        }
 
-		if (empty($assign_taxes)){ 
-			//_wc_term_recount($terms, $tx_name, true, false);			
-			return;
-		}
+        if (empty($assign_taxes)) return;
 
-		// foreach ($assign_taxes as $tt) {			
-		// 	$this->wpdb->insert( $this->wpdb->term_relationships, array( 'object_id' => $pid, 'term_taxonomy_id' => $tt ) );
-		// 	$this->wpdb->query( "UPDATE {$this->wpdb->term_taxonomy} SET count = count + 1 WHERE term_taxonomy_id = $tt" );
-		// 	delete_transient( 'wc_ln_count_' . md5( sanitize_key( $tx_name ) . sanitize_key( $tt ) ) );
-		// }
+        // foreach ($assign_taxes as $tt) {
+        // 	$this->wpdb->insert( $this->wpdb->term_relationships, array( 'object_id' => $pid, 'term_taxonomy_id' => $tt ) );
+        // 	$this->wpdb->query( "UPDATE {$this->wpdb->term_taxonomy} SET count = count + 1 WHERE term_taxonomy_id = $tt" );
+        // }
 
-		$values = array();
+        $values = array();
         $term_order = 0;
-		foreach ( $assign_taxes as $tt ){			                        				
-    		$values[] = $this->wpdb->prepare( "(%d, %d, %d)", $pid, $tt, ++$term_order);
-    		$this->wpdb->query( "UPDATE {$this->wpdb->term_taxonomy} SET count = count + 1 WHERE term_taxonomy_id = $tt" );
-			delete_transient( 'wc_ln_count_' . md5( sanitize_key( $tx_name ) . sanitize_key( $tt ) ) );
-			delete_woocommerce_term_meta( $tt, 'product_ids' );
-    	}
-		                					
+        foreach ( $assign_taxes as $tt )
+        {
+            do_action('wp_all_import_associate_term', $pid, $tt, $tx_name);
+            $values[] = $this->wpdb->prepare( "(%d, %d, %d)", $pid, $tt, ++$term_order);
+            $this->wpdb->query( "UPDATE {$this->wpdb->term_taxonomy} SET count = count + 1 WHERE term_taxonomy_id = $tt" );
+        }
 
-		if ( $values ){						
-			if ( false === $this->wpdb->query( "INSERT INTO {$this->wpdb->term_relationships} (object_id, term_taxonomy_id, term_order) VALUES " . join( ',', $values ) . " ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" ) ){
-				$logger and call_user_func($logger, __('<b>ERROR</b> Could not insert term relationship into the database', 'wpai_woocommerce_addon_plugin') . ': '. $this->wpdb->last_error);				
-			}
-		}       		                 		
 
-		wp_cache_delete( $pid, $tx_name . '_relationships' ); 
+        if ( $values ){
+            if ( false === $this->wpdb->query( "INSERT INTO {$this->wpdb->term_relationships} (object_id, term_taxonomy_id, term_order) VALUES " . join( ',', $values ) . " ON DUPLICATE KEY UPDATE term_order = VALUES(term_order)" ) ){
+                $logger and call_user_func($logger, __('<b>ERROR</b> Could not insert term relationship into the database', 'wp_all_import_plugin') . ': '. $this->wpdb->last_error);
+            }
+        }
 
-		//_wc_term_recount( $assign_taxes, $tx_name );
+        wp_cache_delete( $pid, $tx_name . '_relationships' );
+		
 	}		
 	
 	function create_taxonomy($attr_name, $logger){

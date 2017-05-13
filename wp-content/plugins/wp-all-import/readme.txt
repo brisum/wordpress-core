@@ -1,8 +1,8 @@
 === Import any XML or CSV File to WordPress ===
 Contributors: soflyy, wpallimport 
 Requires at least: 4.1
-Tested up to: 4.6.1
-Stable tag: 3.3.8
+Tested up to: 4.7.4
+Stable tag: 3.4.3
 Tags: wordpress csv import, wordpress xml import, xml, csv, datafeed, import, migrate, import csv to wordpress, import xml to wordpress, advanced xml import, advanced csv import, bulk csv import, bulk xml import, bulk data import, xml to custom post type, csv to custom post type, woocommerce csv import, woocommerce xml import, csv import, import csv, xml import, import xml, csv importer
 
 WP All Import is an extremely powerful importer that makes it easy to import any XML or CSV file to WordPress.
@@ -104,6 +104,35 @@ Does it work with special character encoding like Hebrew, Arabic, Chinese, etc?
 4. Manage imports.
 
 == Changelog ==
+
+= 3.4.3 =
+* improvement: new filter 'wp_all_import_phpexcel_delimiter'
+* improvement: new filter 'wp_all_import_is_trim_parsed_data'
+* improvement: added new filter 'wp_all_import_skip_x_csv_rows'
+* improvement: added csv delimiter setting to import options screen
+* bug fix: import duplicate tags
+
+= 3.4.2 =
+* bug fix: conflict with the event calendar plugin
+* bug fix: import images for newly created products
+
+= 3.4.1 =
+* improvement: Stop parsing data which is not going to be updated
+* improvement: added new filter wp_all_import_phpexcel_object to modify excel data before import
+* bug fix: search for images ending with underscores in media
+* bug fix: import hierarchical posts/pages
+* bug fix: import cpt page templates
+
+= 3.4.0 =
+* improvement: compatibility with PHP 7.x
+
+= 3.3.9 =
+* improvement: new re-import option 'is update post type'
+* bug fix: hierarchy taxonomies preview
+* bug fix: empty logs folder generation
+* bug fix: 'Keep images currently in Media Library' option for add-ons
+* bug fix: import bundles with gz files
+* bug fix: custom functions for attachments
 
 = 3.3.8 =
 * improvement: 'Force Stream Reader' setting

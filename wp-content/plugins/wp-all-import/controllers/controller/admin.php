@@ -38,9 +38,14 @@ abstract class PMXI_Controller_Admin extends PMXI_Controller {
 			PMXI_Plugin::getInstance()->updateOption($post);
 		}
 		
-		$port = PMXI_Plugin::getInstance()->getOption('port');	
-		
-		if (!empty($port) and is_numeric($port)) $url .= ':' . $port;
+		$port = PMXI_Plugin::getInstance()->getOption('port');
+
+        if ( ! empty($port) and is_numeric($port) ){
+            $url .= ':' . $port;
+        }
+        else{
+            $url = ( ! empty($p_url['port']) && ! in_array( $p_url['port'], array( 80, 443 ) ) ) ? $url . ':' . $p_url['port'] : $url;
+        }
 
 		if ($remove) {
 			$this->baseUrl = $url . remove_query_arg($remove);

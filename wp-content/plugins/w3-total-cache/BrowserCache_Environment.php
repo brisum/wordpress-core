@@ -258,6 +258,7 @@ class BrowserCache_Environment {
 
 			$rules .= "</IfModule>\n";
 
+
 			$rules .= "<IfModule mod_expires.c>\n";
 			$rules .= "    ExpiresActive On\n";
 
@@ -315,9 +316,6 @@ class BrowserCache_Environment {
 				$rules .= "        BrowserMatch \\bMSI[E] !no-gzip !gzip-only-text/html\n";
 				$rules .= "    </IfModule>\n";
 			}
-			$rules .= "    <IfModule mod_headers.c>\n";
-			$rules .= "        Header append Vary User-Agent env=!dont-vary\n";
-			$rules .= "    </IfModule>\n";
 			if ( version_compare( $this->_get_server_version(), '2.3.7', '>=' ) ) {
 				$rules .= "    <IfModule mod_filter.c>\n";
 			}
@@ -392,6 +390,10 @@ class BrowserCache_Environment {
 
 		$rules = '';
 		$headers_rules = '';
+
+		if ( $section == 'html' ) {
+			$headers_rules .= "        Header append Vary User-Agent env=!dont-vary\n";
+		}
 
 		if ( $cache_control ) {
 			$cache_policy = $config->get_string( 'browsercache.' . $section . '.cache.policy' );

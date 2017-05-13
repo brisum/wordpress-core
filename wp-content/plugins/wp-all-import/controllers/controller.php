@@ -123,6 +123,7 @@ abstract class PMXI_Controller {
 			$msgs = $this->warnings;
 		}
 		if (is_wp_error($msgs)) {
+			unset($msgs->errors['root-element-validation']);
 			$msgs = $msgs->get_error_messages();
 		}
 		if ( ! is_array($msgs)) {

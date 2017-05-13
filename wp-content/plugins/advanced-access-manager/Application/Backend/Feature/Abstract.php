@@ -24,9 +24,12 @@ abstract class AAM_Backend_Feature_Abstract {
      * @throws Exception
      */
     public function __construct() {
-        $cap = AAM_Core_Config::get($this->getAccessOption(), 'administrator');
-        if (!AAM::getUser()->hasCapability($cap)) {
-            Throw new Exception(__('Access Denied', AAM_KEY));
+        if (is_admin()) {
+            $capability = AAM_Backend_View::getAAMCapability();
+            
+            if (!AAM::getUser()->hasCapability($capability)) {
+                wp_die(__('Access Denied', AAM_KEY));
+            }
         }
     }
     

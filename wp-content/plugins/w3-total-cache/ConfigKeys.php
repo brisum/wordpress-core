@@ -160,6 +160,14 @@ $keys = array(
 		'type' => 'boolean',
 		'default' => false
 	),
+	'objectcache.enabled_for_wp_admin' => array(
+		'type' => 'boolean',
+		'default' => true
+	),
+	'objectcache.fallback_transients' => array(
+		'type' => 'boolean',
+		'default' => true
+	),
 	'objectcache.engine' => array(
 		'type' => 'string',
 		'default' => 'file'
@@ -323,7 +331,7 @@ $keys = array(
 	),
 	'pgcache.cache.query' => array(
 		'type' => 'boolean',
-		'default' => true
+		'default' => false
 	),
 	'pgcache.cache.home' => array(
 		'type' => 'boolean',
@@ -339,7 +347,7 @@ $keys = array(
 	),
 	'pgcache.cache.ssl' => array(
 		'type' => 'boolean',
-		'default' => false
+		'default' => true
 	),
 	'pgcache.cache.404' => array(
 		'type' => 'boolean',
@@ -351,7 +359,8 @@ $keys = array(
 			'Last-Modified',
 			'Content-Type',
 			'X-Pingback',
-			'P3P'
+			'P3P',
+			'Link'
 		)
 	),
 	'pgcache.compatibility' => array(
@@ -656,6 +665,10 @@ $keys = array(
 			'RSPEAK_'
 		)
 	),
+	'minify.css.combine' => array(
+		'type' => 'boolean',
+		'default' => false
+	),
 	'minify.css.enable' => array(
 		'type' => 'boolean',
 		'default' => true
@@ -664,7 +677,7 @@ $keys = array(
 		'type' => 'string',
 		'default' => 'css'
 	),
-	'minify.css.combine' => array(
+	'minify.css.http2push' => array(
 		'type' => 'boolean',
 		'default' => false
 	),
@@ -687,6 +700,10 @@ $keys = array(
 	'minify.css.groups' => array(
 		'type' => 'array',
 		'default' => array()
+	),
+	'minify.js.http2push' => array(
+		'type' => 'boolean',
+		'default' => false
 	),
 	'minify.js.enable' => array(
 		'type' => 'boolean',
@@ -790,11 +807,11 @@ $keys = array(
 	),
 	'minify.csstidy.options.compress_colors' => array(
 		'type' => 'boolean',
-		'default' => true
+		'default' => false
 	),
 	'minify.csstidy.options.compress_font-weight' => array(
 		'type' => 'boolean',
-		'default' => true
+		'default' => false
 	),
 	'minify.csstidy.options.lowercase_s' => array(
 		'type' => 'boolean',
@@ -802,9 +819,13 @@ $keys = array(
 	),
 	'minify.csstidy.options.optimise_shorthands' => array(
 		'type' => 'integer',
-		'default' => 1
+		'default' => 0
 	),
 	'minify.csstidy.options.remove_last_;' => array(
+		'type' => 'boolean',
+		'default' => false
+	),
+	'minify.csstidy.options.remove_space_before_important' => array(
 		'type' => 'boolean',
 		'default' => false
 	),
@@ -822,7 +843,11 @@ $keys = array(
 	),
 	'minify.csstidy.options.merge_selectors' => array(
 		'type' => 'integer',
-		'default' => 2
+		'default' => 0
+	),
+	'minify.csstidy.options.discard_invalid_selectors' => array(
+		'type' => 'boolean',
+		'default' => false
 	),
 	'minify.csstidy.options.discard_invalid_properties' => array(
 		'type' => 'boolean',
@@ -830,7 +855,7 @@ $keys = array(
 	),
 	'minify.csstidy.options.css_level' => array(
 		'type' => 'string',
-		'default' => 'CSS2.1'
+		'default' => 'CSS3.0'
 	),
 	'minify.csstidy.options.preserve_css' => array(
 		'type' => 'boolean',
@@ -842,7 +867,7 @@ $keys = array(
 	),
 	'minify.csstidy.options.template' => array(
 		'type' => 'string',
-		'default' => 'default'
+		'default' => 'highest_compression'
 	),
 	'minify.htmltidy.options.clean' => array(
 		'type' => 'boolean',
@@ -879,6 +904,10 @@ $keys = array(
 	'minify.cache.files' => array(
 		'type' => 'array',
 		'default' => array( '' )
+	),
+	'minify.cache.files_regexp' => array(
+		'type' => 'boolean',
+		'default' => false
 	),
 
 	'cdn.configuration_overloaded' => array(
@@ -1439,6 +1468,10 @@ $keys = array(
 		'type' => 'boolean',
 		'default' => false
 	),
+	'browsercache.cssjs.querystring' => array(
+		'type' => 'boolean',
+		'default' => false
+	),
 	'browsercache.html.compression' => array(
 		'type' => 'boolean',
 		'default' => true
@@ -1512,6 +1545,10 @@ $keys = array(
 		'default' => false
 	),
 	'browsercache.other.replace' => array(
+		'type' => 'boolean',
+		'default' => false
+	),
+	'browsercache.other.querystring' => array(
 		'type' => 'boolean',
 		'default' => false
 	),
@@ -1708,7 +1745,7 @@ $keys = array(
 	),
 	'common.track_usage' => array(
 		'type' => 'boolean',
-		'default' => false
+		'default' => true
 	),
 	'common.tweeted' => array(
 		'type' => 'boolean',
@@ -1804,7 +1841,8 @@ $keys = array(
 		'type' => 'array',
 		'default' => array(
 			'newrelic' => 'w3-total-cache/Extension_NewRelic_Plugin.php',
-			'fragmentcache' => 'w3-total-cache/Extension_FragmentCache_Plugin.php'
+			'fragmentcache' => 'w3-total-cache/Extension_FragmentCache_Plugin.php',
+			'swarmify' => 'w3-total-cache/Extension_Swarmify_Plugin.php'
 		)
 	),
 	'extensions.active_frontend' => array(

@@ -3,8 +3,8 @@ Contributors: Allaerd
 Tags: Woocommerce, commerce, e-commerce, ecommerce, inventory, stock, products, import, csv, multiple images, upload, export
 
 Requires at least: 4.0
-Tested up to: 4.6
-Stable tag: 3.1.4
+Tested up to: 4.7
+Stable tag: 3.3.5
 
 Donate link: https://allaerd.org
 
@@ -72,6 +72,27 @@ Version 3.1.0  is mayor release. Please make a backup first before you upgrade! 
 * add-ons versions will be visible in add-ons part and upgrade notices
 * export options other product types
 * support for xls, xml, feeds
+
+= 3.3.5 =
+* fix bug in export when there are no headers
+
+= 3.3.4 =
+* new query for retreiving images. ( thank to Felix )
+* new way of validtion image URL's
+* clear transients after product save
+
+= 3.3.3 =
+* post parent handling in the main plugin
+
+= 3.3.2 =
+* solved a bug when the plugin was installed and no header was present
+* solved a bug when the product was empty
+* always clear output before returning
+
+= 3.3.1 =
+* added wc_vendors plugin support
+* added woocommerce jetpack Country Groups support and currency
+* added WC_Product_Vendors support
 
 = 3.2.1 =
 * solved a crash when activating the new importer

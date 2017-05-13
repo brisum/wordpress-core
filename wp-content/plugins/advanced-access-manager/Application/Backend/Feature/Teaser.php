@@ -19,15 +19,10 @@ class AAM_Backend_Feature_Teaser extends AAM_Backend_Feature_Abstract {
      * 
      */
     public function save() {
-        $param   = AAM_Core_Request::post('param');
-        $value   = AAM_Core_Request::post('value');
-        $subject = AAM_Backend_View::getSubject();
+        $param = AAM_Core_Request::post('param');
+        $value = AAM_Core_Request::post('value');
         
-        if ($this->isAdministrator()) {
-            AAM_Core_Config::set($param, $value);
-        } else {
-            do_action('aam-action-teaser-save', $subject, $param, $value);
-        }
+        AAM_Backend_View::getSubject()->getObject('teaser')->save($param, $value);
         
         return json_encode(array('status' => 'success'));
     }
@@ -37,7 +32,8 @@ class AAM_Backend_Feature_Teaser extends AAM_Backend_Feature_Abstract {
      * @return type
      */
     public function reset() {
-        do_action('aam-action-teaser-reset', AAM_Backend_View::getSubject());
+        $subject = AAM_Backend_View::getSubject();
+        $subject->getObject('teaser')->reset();
         
         return json_encode(array('status' => 'success')); 
     }
@@ -46,11 +42,23 @@ class AAM_Backend_Feature_Teaser extends AAM_Backend_Feature_Abstract {
      * 
      * @return type
      */
-    public function isAdministrator() {
-        $subject = AAM_Backend_View::getSubject();
-        $adminId = AAM_Core_Config::get('core.admin.id', 'administrator');
+    public function isDefault() {
+        return (AAM_Backend_View::getSubject()->getUID() == 'default');
+    }
+    
+    /**
+     * Check inheritance status
+     * 
+     * Check if teaser settings are overwritten
+     * 
+     * @return boolean
+     * 
+     * @access protected
+     */
+    protected function isOverwritten() {
+        $object = AAM_Backend_View::getSubject()->getObject('teaser');
         
-        return ($subject->getUID() == 'role' && $subject->getId() == $adminId);
+        return $object->isOverwritten();
     }
     
     /**
@@ -59,16 +67,10 @@ class AAM_Backend_Feature_Teaser extends AAM_Backend_Feature_Abstract {
      * @return type
      */
     public function getOption($option, $default = null) {
-        $value = AAM_Core_Config::get($option, $default);
+        $object = AAM_Backend_View::getSubject()->getObject('teaser');
+        $value  = $object->get($option);
         
-        if (!$this->isAdministrator()) {
-            $subject = AAM_Backend_View::getSubject();
-            $value = apply_filters(
-                    'aam-filter-teaser-option', $value, $option, $subject
-            );
-        }
-        
-        return $value;
+        return (!is_null($value) ? $value : $default);
     }
     
     /**
@@ -93,17 +95,24 @@ class AAM_Backend_Feature_Teaser extends AAM_Backend_Feature_Abstract {
      * @access public
      */
     public static function register() {
-        $cap = AAM_Core_Config::get(self::getAccessOption(), 'administrator');
+        if (AAM_Core_API::capabilityExists('aam_manage_content_teaser')) {
+            $cap = 'aam_manage_content_teaser';
+        } else {
+            $cap = AAM_Core_Config::get(
+                    self::getAccessOption(), AAM_Backend_View::getAAMCapability()
+            );
+        }
         
         AAM_Backend_Feature::registerFeature((object) array(
             'uid'        => 'teaser',
-            'position'   => 40,
+            'position'   => 45,
             'title'      => __('Content Teaser', AAM_KEY),
             'capability' => $cap,
             'subjects'   => array(
                 'AAM_Core_Subject_Role', 
                 'AAM_Core_Subject_User', 
-                'AAM_Core_Subject_Visitor'
+                'AAM_Core_Subject_Visitor',
+                'AAM_Core_Subject_Default'
             ),
             'view'       => __CLASS__
         ));

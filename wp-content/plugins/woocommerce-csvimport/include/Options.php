@@ -7,21 +7,10 @@
  * Time: 15:15
  */
 
-namespace Allaerd\Woocsv;
+namespace Allaerd;
 
-/**
- * Class woocsv_options
- * @package AEM
- */
-/**
- * Class woocsv_options
- * @package AEM
- */
 class Options
 {
-    /**
-     * @var array
-     */
     public $options = array (
         'woocsv_add_to_categories'   => 1,
         'woocsv_blocksize'           => 'auto',
@@ -36,10 +25,6 @@ class Options
         'woocsv_curl_followlocation' => 0,
     );
 
-    /**
-     * @param $name
-     * @return bool|mixed|void
-     */
     public function get ( $name )
     {
         if ( !key_exists ( $name, $this->options ) )
@@ -50,11 +35,6 @@ class Options
         return get_option ( $name );
     }
 
-    /**
-     * @param $name
-     * @param $value
-     * @return bool
-     */
     public function saveOption ( $name, $value )
     {
         if ( in_array ( $name, $this->options ) )
@@ -65,9 +45,6 @@ class Options
         return update_option ( $name, $value );
     }
 
-    /**
-     *
-     */
     public function saveDefaultOptionsAndValues ()
     {
         foreach ( $this->options as $key => $value )

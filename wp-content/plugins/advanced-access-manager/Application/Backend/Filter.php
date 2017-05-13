@@ -50,15 +50,21 @@ class AAM_Backend_Filter {
         add_filter('page_row_actions', array($this, 'postRowActions'), 10, 2);
         add_filter('post_row_actions', array($this, 'postRowActions'), 10, 2);
         add_action('admin_action_edit', array($this, 'adminActionEdit'));
-        
-        //wp die hook
-        add_filter('wp_die_handler', array($this, 'backendDie'));
+
+        //default category filder
+        add_filter('pre_option_default_category', array($this, 'defaultCategory'));
         
         //add post filter for LIST restriction
-        add_filter('the_posts', array($this, 'thePosts'), 999, 2);
-        if (AAM_Core_Config::get('large-post-number', false)) {
-            add_action('pre_get_posts', array($this, 'preparePostQuery'));
+        if (!AAM::isAAM() && AAM_Core_Config::get('check-post-visibility', true)) {
+            add_filter('found_posts', array($this, 'foundPosts'), 999, 2);
+            add_filter('posts_fields_request', array($this, 'fieldsRequest'), 999, 2);
+            add_action('pre_get_posts', array($this, 'preparePostQuery'), 999);
         }
+        
+        add_action('pre_post_update', array($this, 'prePostUpdate'), 10, 2);
+        
+        //user profile update action
+        add_action('profile_update', array($this, 'profileUpdate'), 10, 2);
         
         //some additional filter for user capabilities
         add_filter('user_has_cap', array($this, 'checkUserCap'), 999, 4);
@@ -66,6 +72,58 @@ class AAM_Backend_Filter {
         //screen options & contextual help hooks
         add_filter('screen_options_show_screen', array($this, 'screenOptions'));
         add_filter('contextual_help', array($this, 'helpOptions'), 10, 3);
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $old
+     */
+    public function profileUpdate($id, $old) {
+        $user = get_user_by('ID', $id);
+        
+        //role changed?
+        if (implode('', $user->roles) != implode('', $old->roles)) {
+            AAM_Core_Cache::clear($id);
+        }
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @param type $data
+     */
+    public function prePostUpdate($id, $data) {
+        $post = get_post($id);
+        
+        if ($post->post_author != $data['post_author']) {
+            AAM_Core_Cache::clear($id);
+        }
+    }
+    
+    /**
+     * 
+     * @staticvar type $default
+     * @param type $category
+     * @return type
+     */
+    public function defaultCategory($category) {
+        static $default = null;
+        
+        if (is_null($default)) {
+            //check if user category is defined
+            $id      = get_current_user_id();
+            $default = AAM_Core_Config::get('default.category.user.' . $id , null);
+            $roles   = AAM::getUser()->roles;
+            
+            if (is_null($default) && count($roles)) {
+                $default = AAM_Core_Config::get(
+                    'default.category.role.' . array_shift($roles), false
+                );
+            }
+        }
+        
+        return ($default ? $default : $category);
     }
     
     /**
@@ -82,7 +140,6 @@ class AAM_Backend_Filter {
         //compile menu
         if (empty($plugin_page)){
             $menu     = basename(AAM_Core_Request::server('SCRIPT_NAME'));
-            
             $taxonomy = AAM_Core_Request::get('taxonomy');
             $postType = AAM_Core_Request::get('post_type');
             $page     = AAM_Core_Request::get('page');
@@ -101,10 +158,13 @@ class AAM_Backend_Filter {
         $object = AAM::getUser()->getObject('menu');
 
         if ($object->has($menu)) {
-            AAM_Core_API::reject('backend', array('object' => $object, 'id' => $menu));
+            AAM_Core_API::reject(
+                'backend', 
+                array('hook' => 'access_backend_menu', 'id' => $menu)
+            );
         }
     }
-
+    
     /**
      * Filter the Admin Menu
      *
@@ -122,7 +182,7 @@ class AAM_Backend_Filter {
     }
 
     /**
-     * Hanlde Metabox initialization process
+     * Handle metabox initialization process
      *
      * @return void
      *
@@ -132,7 +192,7 @@ class AAM_Backend_Filter {
         global $post;
 
         //make sure that nobody is playing with screen options
-        if ($post instanceof WP_Post) {
+        if (is_a($post, 'WP_Post')) {
             $screen = $post->post_type;
         } elseif ($screen_object = get_current_screen()) {
             $screen = $screen_object->id;
@@ -144,11 +204,11 @@ class AAM_Backend_Filter {
             AAM::getUser()->getObject('metabox')->filterBackend($screen);
         }
     }
-
+    
     /**
      * Post Quick Menu Actions Filtering
      *
-     * @param array $actions
+     * @param array   $actions
      * @param WP_Post $post
      *
      * @return array
@@ -156,10 +216,13 @@ class AAM_Backend_Filter {
      * @access public
      */
     public function postRowActions($actions, $post) {
-        $object = AAM::getUser()->getObject('post', $post->ID);
+        $object = AAM::getUser()->getObject('post', $post->ID, $post);
+        
+        $edit   = $object->has('backend.edit');
+        $others = $object->has('backend.edit_others');
         
         //filter edit menu
-        if ($object->has('backend.edit')) {
+        if ($edit || ($others && !$this->isAuthor($post))) {
             if (isset($actions['edit'])) { 
                 unset($actions['edit']); 
             }
@@ -167,14 +230,27 @@ class AAM_Backend_Filter {
                 unset($actions['inline hide-if-no-js']);
             }
         }
+        
+        $delete = $object->has('backend.delete');
+        $others = $object->has('backend.delete_others');
 
         //filter delete menu
-        if ($object->has('backend.delete')) {
+        if ($delete || ($others && !$this->isAuthor($post))) {
             if (isset($actions['trash'])) {
                 unset($actions['trash']);
             }
             if (isset($actions['delete'])) {
                 unset($actions['delete']);
+            }
+        }
+        
+        $publish = $object->has('backend.publish');
+        $others  = $object->has('backend.publish_others');
+        
+        //filter edit menu
+        if ($publish || ($others && !$this->isAuthor($post))) {
+            if (isset($actions['inline hide-if-no-js'])) {
+                unset($actions['inline hide-if-no-js']);
             }
         }
 
@@ -191,14 +267,21 @@ class AAM_Backend_Filter {
      * @access public
      */
     public function adminActionEdit() {
-        global $post;
+        $post = $this->getPost();
         
         if (is_a($post, 'WP_Post')) {
-            $object = AAM::getUser()->getObject('post', $post->ID);
-            if ($object->has('backend.edit')) {
+            $object = AAM::getUser()->getObject('post', $post->ID, $post);
+            $edit   = $object->has('backend.edit');
+            $others = $object->has('backend.edit_others');
+            
+            if ($edit || ($others && !$this->isAuthor($post))) {
                 AAM_Core_API::reject(
-                        'backend', 
-                        array('object' => $object, 'action' => 'backend.edit')
+                    'backend', 
+                    array(
+                        'hook'   => 'post_edit', 
+                        'action' => 'backend.edit', 
+                        'post'   => $post
+                    )
                 );
             }
         }
@@ -226,70 +309,91 @@ class AAM_Backend_Filter {
 
         return $post;
     }
-
+    
     /**
-     * Take control over wp_die function
-     *
-     * @param callback $function
-     *
-     * @return void
-     *
-     * @access public
+     * 
+     * @global type $wpdb
+     * @param type $fields
+     * @param type $query
+     * @return type
      */
-    public function backendDie($function) {
-        if (AAM_Core_Config::get('access-denied-handler', true)) {
-            AAM_Core_API::reject(
-                'backend', array('callback' => $function, 'skip-die' => true)
-            );
+    public function fieldsRequest($fields, $query) {
+        global $wpdb;
+        
+        $qfields = (isset($query->query['fields']) ? $query->query['fields'] : '');
+        
+        if ($qfields == 'id=>parent') {
+            $author = "{$wpdb->posts}.post_author";
+            if (strpos($fields, $author) === false) {
+                $fields .= ", $author"; 
+            }
+            
+            $status = "{$wpdb->posts}.post_status";
+            if (strpos($fields, $status) === false) {
+                $fields .= ", $status"; 
+            }
+                    
+            $type = "{$wpdb->posts}.post_type";
+            if (strpos($fields, $type) === false) {
+                $fields .= ", $type"; 
+            }        
         }
         
-        return $function;
+        return $fields;
     }
 
     /**
      * Filter posts from the list
      *  
-     * @param array $posts
+     * @param int      $counter
+     * @param WP_Query $query
      * 
      * @return array
      * 
      * @access public
      */
-    public function thePosts($posts) {
+    public function foundPosts($counter, $query) {
         $filtered = array();
         
-        if (AAM::isAAM()) { //skip post filtering if this is AAM page
-            $filtered = $posts;
-        } else {
-            foreach ($posts as $post) {
-                $object = AAM::getUser()->getObject('post', $post->ID);
-                $list   = $object->has('backend.list');
-                $others = $object->has('backend.list_others');
-                
-                if (!$list && (!$others || $this->isAuthor($post))) {
-                    $filtered[] = $post;
-                }
+        foreach ($query->posts as $post) {
+            if (isset($post->post_type)) {
+                $type = $post->post_type;
+            } else {
+                $type = AAM_Core_API::getQueryPostType($query);
+            }
+            
+            $object = (is_scalar($post) ? get_post($post) : $post);
+            
+            if (!AAM_Core_API::isHiddenPost($object, $type, 'backend')) {
+                $filtered[] = $post;
+            } else {
+                $counter--;
+                $query->post_count--;
             }
         }
+        
+        $query->posts = $filtered;
 
-        return $filtered;
+        return $counter;
     }
     
     /**
+     * Prepare pre post query
      * 
-     * @param type $query
+     * @param WP_Query $query
+     * 
+     * @return void
+     * 
+     * @access public
      */
     public function preparePostQuery($query) {
         if ($this->skip === false) {
-            $filtered = array();
-
-            foreach ($this->fetchPosts($query) as $id) {
-                if (AAM::getUser()->getObject('post', $id)->has('backend.list')) {
-                    $filtered[] = $id;
-                }
-            }
+            $this->skip = true;
+            $filtered   = AAM_Core_API::getFilteredPostList($query, 'backend');
+            $this->skip = false;
             
-            if (isset($query->query_vars['post__not_in'])) {
+            if (isset($query->query_vars['post__not_in']) 
+                    && is_array($query->query_vars['post__not_in'])) {
                 $query->query_vars['post__not_in'] = array_merge(
                         $query->query_vars['post__not_in'], $filtered
                 );
@@ -297,34 +401,6 @@ class AAM_Backend_Filter {
                 $query->query_vars['post__not_in'] = $filtered;
             }
         }
-    }
-
-    /**
-     * 
-     * @param type $query
-     * @return type
-     */
-    protected function fetchPosts($query) {
-        $this->skip = true;
-        
-        if (!empty($query->query['post_type'])) {
-            $postType = $query->query['post_type'];
-        } elseif (!empty($query->query_vars['post_type'])) {
-            $postType = $query->query_vars['post_type'];
-        } else {
-            $postType = 'post';
-        }
-        
-        $posts = get_posts(array(
-            'post_type'   => (is_string($postType) ? $postType : 'post'),
-            'numberposts' => -1,
-            'fields'      => 'ids',
-            'post_status' => 'any'
-        ));
-                    
-        $this->skip = false;
-        
-        return $posts;
     }
 
     /**
@@ -344,21 +420,47 @@ class AAM_Backend_Filter {
      * @access public
      */
     public function checkUserCap($allCaps, $metaCaps, $args) {
+        global $post;
+        
         //make sure that $args[2] is actually post ID
         if (isset($args[2]) && is_scalar($args[2])) { 
             switch($args[0]) {
                 case 'edit_post':
                     $object = AAM::getUser()->getObject('post', $args[2]);
-                    if ($object->has('backend.edit')) {
-                        $allCaps = $this->restrictPostActions($allCaps, $metaCaps);
+                    if ($object->getPost()->post_status != 'auto-draft') {
+                        $edit   = $object->has('backend.edit');
+                        $others = $object->has('backend.edit_others');
+                        if ($edit || ($others && !$this->isAuthor($object->getPost()))) {
+                            $allCaps = $this->restrictPostActions($allCaps, $metaCaps);
+                        }
                     }
                     break;
 
                 case 'delete_post' :
                     $object = AAM::getUser()->getObject('post', $args[2]);
-                    if ($object->has('backend.delete')) {
+                    $delete = $object->has('backend.delete');
+                    $others = $object->has('backend.delete_others');
+                    if ($delete || ($others && !$this->isAuthor($object->getPost()))) {
                         $allCaps = $this->restrictPostActions($allCaps, $metaCaps);
                     }
+                    break;
+                    
+                default:
+                    break;
+            }
+        } elseif (is_a($post, 'WP_Post')) {
+            switch ($args[0]) {
+                case 'publish_posts':
+                case 'publish_pages':
+                    $object = AAM::getUser()->getObject('post', $post->ID);
+                    $publish = $object->has('backend.publish');
+                    $others  = $object->has('backend.publish_others');
+                    if ($publish || ($others && !$this->isAuthor($post))) {
+                        $allCaps = $this->restrictPostActions($allCaps, $metaCaps);
+                    }
+                    break;
+                
+                default:
                     break;
             }
         }
@@ -372,12 +474,7 @@ class AAM_Backend_Filter {
      * @return type
      */
     public function screenOptions($flag) {
-        //IMPORTANT!! Do not use AAM::getUser()->hasCapability because 
-        //show_screen_options is custom capability and it may not be present for new
-        //website
-        $caps = AAM_Core_API::getAllCapabilities();
-        
-        if (isset($caps['show_screen_options'])) {
+        if (AAM_Core_API::capabilityExists('show_screen_options')) {
             $flag = AAM::getUser()->hasCapability('show_screen_options');
         }
         
@@ -392,12 +489,7 @@ class AAM_Backend_Filter {
      * @return array
      */
     public function helpOptions($help, $id, $screen) {
-        //IMPORTANT!! Do not use AAM::getUser()->hasCapability because 
-        //show_screen_options is custom capability and it may not be present for new
-        //website
-        $caps = AAM_Core_API::getAllCapabilities();
-        
-        if (isset($caps['show_help_tabs'])) {
+        if (AAM_Core_API::capabilityExists('show_help_tabs')) {
             if (!AAM::getUser()->hasCapability('show_help_tabs')) {
                 $screen->remove_help_tabs();
                 $help = array();

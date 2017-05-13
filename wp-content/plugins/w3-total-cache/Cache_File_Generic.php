@@ -50,7 +50,7 @@ class Cache_File_Generic extends Cache_File {
 		$dir = dirname( $path );
 
 		if ( !@is_dir( $dir ) ) {
-			if ( !Util_File::mkdir_from( $dir, W3TC_CACHE_DIR ) )
+			if ( !Util_File::mkdir_from_safe( $dir, W3TC_CACHE_DIR ) )
 				return false;
 		}
 
@@ -80,7 +80,7 @@ class Cache_File_Generic extends Cache_File {
 
 		@unlink( $tmppath );
 
-		$old_entry_path = $path . '.old';
+		$old_entry_path = $path . '_old';
 		@unlink( $old_entry_path );
 
 		if ( Util_Environment::is_apache() && isset( $var['headers'] ) &&
@@ -115,7 +115,7 @@ class Cache_File_Generic extends Cache_File {
 			return array( $data, $has_old_data );
 
 
-		$path_old = $path . '.old';
+		$path_old = $path . '_old';
 		$too_old_time = time() - 30;
 
 		if ( $exists = file_exists( $path_old ) ) {
@@ -128,7 +128,8 @@ class Cache_File_Generic extends Cache_File {
 
 				}
 
-				@touch( $path_old );
+				// use old enough time to cause recalculation on next call
+				@touch( $path_old, 1479904835 );
 			}
 		}
 		$has_old_data = $exists;
@@ -185,21 +186,20 @@ class Cache_File_Generic extends Cache_File {
 		if ( !file_exists( $path ) )
 			return true;
 
-		$old_entry_path = $path . '.old';
-		if ( @rename( $path, $old_entry_path ) )
-			return true;
-
-		// if we can delete old entry - do second attempt to store in old-entry file
-		if ( @unlink( $old_entry_path ) ) {
-			if ( @rename( $path, $old_entry_path ) )
-				return true;
+		$old_entry_path = $path . '_old';
+		if ( ! @rename( $path, $old_entry_path ) ) {
+			// if we can delete old entry - do second attempt to store in old-entry file
+			if ( ! @unlink( $old_entry_path ) || ! @rename( $path, $old_entry_path ) ) {
+				return @unlink( $path );
+			}
 		}
 
-		return @unlink( $path );
+		@touch( $old_entry_path, 1479904835 );
+		return true;
 	}
 
 	/**
-	 * Key to delete, deletes .old and primary if exists.
+	 * Key to delete, deletes _old and primary if exists.
 	 *
 	 * @param unknown $key
 	 * @return bool
@@ -207,7 +207,7 @@ class Cache_File_Generic extends Cache_File {
 	function hard_delete( $key ) {
 		$key = $this->get_item_key( $key );
 		$path = $this->_cache_dir . DIRECTORY_SEPARATOR . $this->_get_path( $key );
-		$old_entry_path = $path . '.old';
+		$old_entry_path = $path . '_old';
 		@unlink( $old_entry_path );
 
 		if ( !file_exists( $path ) )
@@ -274,7 +274,7 @@ class Cache_File_Generic extends Cache_File {
 				if ( $entry == '.' || $entry == '..' ) {
 					continue;
 				}
-				if ( preg_match( '/' . $regex . '/', basename( $entry ) ) ) {
+				if ( preg_match( '~' . $regex . '~', basename( $entry ) ) ) {
 					Util_File::rmdir( $flush_dir . DIRECTORY_SEPARATOR . $entry );
 				}
 			}

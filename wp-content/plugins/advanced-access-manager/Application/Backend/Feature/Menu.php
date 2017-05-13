@@ -33,7 +33,7 @@ class AAM_Backend_Feature_Menu extends AAM_Backend_Feature_Abstract {
     /**
      * Get subject's menu
      * 
-     * Based on the list of capabilitis that current subject has, prepare
+     * Based on the list of capabilities that current subject has, prepare
      * complete menu list and return it.
      * 
      * @return array
@@ -51,7 +51,7 @@ class AAM_Backend_Feature_Menu extends AAM_Backend_Feature_Abstract {
             if (preg_match('/^separator/', $item[2])) {
                 continue; //skip separator
             }
-
+            
             $submenu = $this->getSubmenu($item[2]);
             
             $allowed = AAM_Backend_View::getSubject()->hasCapability($item[1]);
@@ -70,6 +70,19 @@ class AAM_Backend_Feature_Menu extends AAM_Backend_Feature_Abstract {
         }
 
         return $response;
+    }
+    
+    /**
+     * 
+     * @param array $menu
+     * @return array
+     */
+    protected function normalizeItem($menu) {
+        if (strpos($menu, 'customize.php') === 0) {
+            $menu = 'customize.php';
+        }
+        
+        return $menu;
     }
     
     /**
@@ -99,14 +112,15 @@ class AAM_Backend_Feature_Menu extends AAM_Backend_Feature_Abstract {
     protected function getSubmenu($menu) {
         global $submenu;
         
-        $response = array();
-        $subject = AAM_Backend_View::getSubject();
+        $response  = array();
+        $subject   = AAM_Backend_View::getSubject();
+        $isDefault = is_a($subject, 'AAM_Core_Subject_Default');
         
         if (isset($submenu[$menu])) {
             foreach ($submenu[$menu] as $item) {
-                if ($subject->hasCapability($item[1])) {
+                if ($subject->hasCapability($item[1]) || $isDefault) {
                     $response[] = array(
-                        'id'         => $item[2],
+                        'id'         => $this->normalizeItem($item[2]),
                         'name'       => $this->filterMenuName($item[0]),
                         'capability' => $item[1]
                     );
@@ -181,14 +195,24 @@ class AAM_Backend_Feature_Menu extends AAM_Backend_Feature_Abstract {
      * @access public
      */
     public static function register() {
-        $cap = AAM_Core_Config::get(self::getAccessOption(), 'administrator');
+        if (AAM_Core_API::capabilityExists('aam_manage_admin_menu')) {
+            $cap = 'aam_manage_admin_menu';
+        } else {
+            $cap = AAM_Core_Config::get(
+                    self::getAccessOption(), AAM_Backend_View::getAAMCapability()
+            );
+        }
         
         AAM_Backend_Feature::registerFeature((object) array(
             'uid'        => 'admin_menu',
             'position'   => 5,
             'title'      => __('Backend Menu', AAM_KEY),
             'capability' => $cap,
-            'subjects'   => array('AAM_Core_Subject_Role', 'AAM_Core_Subject_User'),
+            'subjects'   => array(
+                'AAM_Core_Subject_Role', 
+                'AAM_Core_Subject_User',
+                'AAM_Core_Subject_Default'
+            ),
             'view'       => __CLASS__
         ));
     }

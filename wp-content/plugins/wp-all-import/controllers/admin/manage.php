@@ -341,9 +341,9 @@ class PMXI_Admin_Manage extends PMXI_Controller_Admin {
 		$history = new PMXI_File_List();
 		$history->setColumns('id', 'name', 'registered_on', 'path')->getBy(array('import_id' => $item->id), 'id DESC');				
 		if ($history->count()){
-			foreach ($history as $file){						
-				if (@file_exists($file['path'])) {
-					$this->data['locfilePath'] = $file['path'];
+			foreach ($history as $file){
+                if (@file_exists(wp_all_import_get_absolute_path($file['path']))) {
+					$this->data['locfilePath'] = wp_all_import_get_absolute_path($file['path']);
 					break;
 				}				
 			}

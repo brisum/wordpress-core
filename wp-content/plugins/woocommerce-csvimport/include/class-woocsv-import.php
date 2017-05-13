@@ -76,7 +76,7 @@ class woocsv_import
     public function __construct ()
     {
 
-        $this->logger = new \Allaerd\Woocsv\LogToFile();
+        $this->logger = new Allaerd\LogToFile();
 
         //load dependencies
         $this->load_dependenies();
@@ -97,7 +97,7 @@ class woocsv_import
         add_action( 'wp_ajax_run_import', array ( $this, 'run_import' ) );
 
         $this->upload_dir = wp_upload_dir();
-
+        
         $this->fields = apply_filters('allaerd_importer_fields', $this->fields);
     }
 
@@ -133,11 +133,6 @@ class woocsv_import
     public function check_install ()
     {
         $message = $this->message;
-
-        //old way
-        if (!get_option( 'woocsv-options' )) {
-            update_option( 'woocsv-options', $this->options );
-        }
 
         //new way
         if (!get_option( 'woocsv_options' )) {
@@ -281,6 +276,9 @@ class woocsv_import
                     'max_execution_time' => $max_execution_time,
                 );
                 woocsv_batches::update( $batch_code, $data );
+
+                do_action('woocsv_batch_created');
+
             } else {
                 //@todo die nice
             }
@@ -291,6 +289,7 @@ class woocsv_import
             $batch_code = $_POST[ 'batch_code' ];
             $batch = woocsv_batches::get_batch( $_POST[ 'batch_code' ] );
         }
+
 
         $this->setLoggerFilename( $batch_code );
 
@@ -345,18 +344,20 @@ class woocsv_import
 
             $woocsv_product->parse_data();
 
+
+
             $woocsv_product->save();
             if ($woocsv_product->log) {
                 $this->logger->log( __( $woocsv_product->log, 'woocommerce-csvimport' ) );
             }
 
 
+
             //write tot log if debug is on
             if ($this->get_debug() == 0) {
-                $this->logger->log( __( '--->debug dump', 'woocommerce-csvimport' ) );
-                $this->logger->log( __( $woocsv_product, 'woocommerce-csvimport' ) );
+                $this->logger->log( '--->debug dump', 'woocommerce-csvimport' );
+                $this->logger->log( $woocsv_product, 'woocommerce-csvimport'  );
             }
-            //close log
 
             $this->logger->log( __( '-----> end row', 'woocommerce-csvimport' ) );
 
@@ -410,12 +411,8 @@ class woocsv_import
 
         woocsv_batches::update( $batch_code, $batch );
 
-        //=============================
-        // Check if we need to debug
-        //=============================
-        if ($this->get_debug() == 0) {
-            ob_get_clean();
-        }
+        //always clean to prevent errors
+        @ob_get_clean();
 
         $post_data[ 'batch' ] = $batch;
 
@@ -459,8 +456,6 @@ class woocsv_import
                         if ($this->get_convert_to_utf8() == 2 && function_exists( 'mb_convert_encoding' )) {
                             $line[ $key ] = mb_convert_encoding( $value, 'UTF-8', '   auto' );
                         }
-
-
                     }
                 }
 
@@ -480,7 +475,6 @@ class woocsv_import
         return array ( 'lines' => $lines, 'total_rows' => $row );
     }
 
-//new for schedule and future use!
 
     public function get_header_from_name ($header_name)
     {

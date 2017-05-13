@@ -1,3 +1,4 @@
+
 <?php
 /*
 	*
@@ -24,7 +25,7 @@
     $filename = $woocsv_import->handle_file_upload( $_FILES[ 'csvfile' ][ 'tmp_name' ],
         $_FILES[ 'csvfile' ][ 'name' ] );
     $headers = get_option( 'woocsv_headers' );
-    if (array_key_exists( $_FILES[ 'csvfile' ][ 'name' ], $headers )) {
+    if ($headers &&  array_key_exists( $_FILES[ 'csvfile' ][ 'name' ], $headers )) {
         $saved_fields = $headers[ $_FILES[ 'csvfile' ][ 'name' ] ];
     } else {
         $saved_fields = array ();
@@ -60,7 +61,7 @@
         // if field is the same header field --> selected
         $original = $field;
         $field = trim( strtolower( $field ) );
-        $saved_field = trim( strtolower( $saved_fields[ $i ] ) );
+        $saved_field = isset($saved_fields[ $i ]) ? trim( strtolower( $saved_fields[ $i ] ) ) : '';
         $header_field = trim( strtolower( $lines[ 0 ][ $i ] ) );
 
         if ($field == $saved_field) {
