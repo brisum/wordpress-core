@@ -8,7 +8,7 @@
  */
 
 /**
- * AAM shortcode strategy for login button
+ * AAM shortcode strategy for login form
  * 
  * @package AAM
  * @author Vasyl Martyniuk <vasyl@vasyltech.com>
@@ -31,9 +31,10 @@ class AAM_Shortcode_Strategy_Login implements AAM_Shortcode_Strategy_Interface {
      * Initialize shortcode decorator
      * 
      * Expecting attributes in $args are:
-     *   "class"    => CSS class for login button
-     *   "label"    => Login button label
-     *   "callback" => callback function that returns the login button
+     *   "id"          => unique form Id
+     *   "user-title"  => Logged in user title
+     *   "redirect"    => Redirect to URL
+     *   "callback"    => callback function that returns the login button
      * 
      * @param type $args
      * @param type $content
@@ -48,20 +49,29 @@ class AAM_Shortcode_Strategy_Login implements AAM_Shortcode_Strategy_Interface {
      * 
      */
     public function run() {
-        $redirect = AAM_Core_Request::server('REQUEST_URI');
-        $class    = (isset($this->args['class']) ? $this->args['class'] : '');
-        $label    = (isset($this->args['label']) ? $this->args['label'] : 'Login');
+        $this->args['id'] = isset($this->args['id']) ? $this->args['id'] : uniqid();
         
-        if (isset($this->args['callback'])) {
-            $button = call_user_func($this->args['callback'], $this);
-        } else {
-            $url     = wp_login_url($redirect);
-            
-            $button  = '<a href="' . $url . '" ';
-            $button .= 'class="' . $class . '">' . $label . '</a>';
+        if (empty($this->args['user-title'])) {
+            $this->args['user-title'] = __('Howdy, %username%', AAM_KEY);
         }
         
-        return $button;
+        if (empty($this->args['redirect'])) {
+            $this->args['redirect'] = AAM_Core_Request::get('redirect_to');
+        }
+        
+        if (isset($this->args['callback'])) {
+            $content = call_user_func($this->args['callback'], $this);
+        } else {
+            ob_start();
+            require AAM_Core_Config::get(
+                'login.shortcode.template', 
+                 dirname(__DIR__) . '/../Frontend/phtml/login.phtml'
+            );
+            $content = ob_get_contents();
+            ob_end_clean();
+        }
+        
+        return $content;
     }
     
     /**

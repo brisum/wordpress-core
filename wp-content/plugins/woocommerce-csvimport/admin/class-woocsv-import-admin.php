@@ -58,10 +58,10 @@ class woocsv_import_admin
 			//main page
 			$page = add_menu_page('CSV Import', __('CSV Import','woocommerce-csvimport') , current($current_role), 'woocsv_import', array($this,'import'), 'dashicons-randomize', 
 			'58.15011976');			
-			
+
 			//settings page
 			add_submenu_page( 'woocsv_import', 'Settings', __('Settings','woocommerce-csvimport'), current($current_role), 'woocsv-settings', array($this, 'settings'));
-		
+
 			//add-ons
 			add_submenu_page( 'woocsv_import', 'Docs', __('Docs','woocommerce-csvimport'), current($current_role), 'woocsv-docs', array($this, 'docs'));
 			

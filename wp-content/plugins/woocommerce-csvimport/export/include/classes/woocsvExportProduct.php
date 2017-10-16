@@ -110,9 +110,8 @@ class woocsvExportProduct
      */
     public function __construct ()
     {
-        $this->fillMeta();
-
-        $this->fillAttributes();
+            $this->fillMeta();
+            $this->fillAttributes();
     }
 
     /**
@@ -121,12 +120,19 @@ class woocsvExportProduct
     public function fillMeta ()
     {
         global $wpdb;
-        $metaFields = $wpdb->get_col( "
+
+        $metaFields = get_transient('woocsv-export-metafields');
+
+        if (! $metaFields ) {
+            $metaFields = $wpdb->get_col( "
             select distinct b.meta_key from $wpdb->posts a, $wpdb->postmeta b
             where post_type in ('product')
             and a.ID = b.post_id
             order by b.meta_key;
         " );
+        }
+
+        set_transient('woocsv-export-metafields',$metaFields,100);
 
         $this->addToMeta( $metaFields );
 

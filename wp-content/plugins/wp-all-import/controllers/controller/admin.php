@@ -1,8 +1,8 @@
 <?php
 /**
  * Introduce special type for controllers which render pages inside admin area
- * 
- * @author Pavel Kulbakin <p.kulbakin@gmail.com>
+ *
+ * @author Maksym Tsypliakov <maksym.tsypliakov@gmail.com>
  */
 abstract class PMXI_Controller_Admin extends PMXI_Controller {
 	/**
@@ -112,9 +112,7 @@ abstract class PMXI_Controller_Admin extends PMXI_Controller {
 		wp_deregister_script('swfupload-handlers');
 		wp_enqueue_script('swfupload-handlers', site_url() . "/wp-includes/js/swfupload/handlers.js", array('jquery'), '2201-20100523');
 
-		wp_enqueue_script('jquery-browserplus-min', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/browserplus-min.js', array('jquery'));
-		wp_enqueue_script('full-plupload', WP_ALL_IMPORT_ROOT_URL . '/static/js/plupload/plupload.full.js', array('jquery-browserplus-min'));
-		wp_enqueue_script('jquery-plupload', WP_ALL_IMPORT_ROOT_URL . '/static/js/plupload/wplupload.js', array('full-plupload', 'jquery'));				
+		wp_enqueue_script('jquery-plupload', WP_ALL_IMPORT_ROOT_URL . '/static/js/plupload/wplupload.js', array('plupload', 'jquery'));
 
 		wp_enqueue_script('pmxi-admin-script', WP_ALL_IMPORT_ROOT_URL . '/static/js/admin.js', array('jquery', 'jquery-ui-dialog', 'jquery-ui-datepicker', 'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-position', 'jquery-ui-autocomplete'), PMXI_VERSION);
 							

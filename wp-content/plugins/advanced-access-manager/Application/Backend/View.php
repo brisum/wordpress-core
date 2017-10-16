@@ -41,13 +41,15 @@ class AAM_Backend_View {
      * @access protected
      */
     protected function __construct() {
-        $classname = 'AAM_Core_Subject_' . ucfirst(
-                        AAM_Core_Request::request('subject')
-        );
-        if (class_exists($classname)) {
-            $this->setSubject(new $classname(
-                stripslashes(AAM_Core_Request::request('subjectId'))
-            ));
+        if (AAM_Core_Request::request('subject')) {
+            $classname = 'AAM_Core_Subject_' . ucfirst(
+                            AAM_Core_Request::request('subject')
+            );
+            if (class_exists($classname)) {
+                $this->setSubject(new $classname(
+                    stripslashes(AAM_Core_Request::request('subjectId'))
+                ));
+            }
         }
 
         //register default features
@@ -204,13 +206,19 @@ class AAM_Backend_View {
         $objectId = intval(AAM_Core_Request::post('objectId', 0));
         
         $param = AAM_Core_Request::post('param');
-        $value = filter_var(
-                AAM_Core_Request::post('value'), FILTER_VALIDATE_BOOLEAN
-        );
+        $value = AAM_Core_Request::post('value');
         
         $result = $this->getSubject()->save($param, $value, $object, $objectId);
 
         return json_encode(array('status' => ($result ? 'success' : 'failure')));
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function reset() {
+        return $this->getSubject()->resetObject(AAM_Core_Request::post('object'));
     }
     
     /**

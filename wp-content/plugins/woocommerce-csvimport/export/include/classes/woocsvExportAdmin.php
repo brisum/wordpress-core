@@ -11,12 +11,10 @@ namespace Allaerd\Export;
 class woocsvExportAdmin
 {
 
-
     public function menu ()
     {
         //export sub page
         add_submenu_page( 'woocsv_import', 'Export', __('Export','woocommerce-csvimport'), 'manage_woocommerce', 'woocsv-export', array($this, 'content'));
-
     }
 
     public function content ()

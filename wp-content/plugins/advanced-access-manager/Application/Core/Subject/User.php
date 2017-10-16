@@ -63,6 +63,27 @@ class AAM_Core_Subject_User extends AAM_Core_Subject {
 
         return $response;
     }
+    
+    /**
+     * 
+     */
+    public function restoreRoles() {
+        $roles = get_user_option('aam-original-roles');
+        
+        //remove curren roles
+        foreach((array) $this->roles as $role) {
+            $this->remove_role($role);
+        }
+        
+        //add original roles
+        foreach(($roles ? $roles : array('subscriber')) as $role) {
+            $this->add_role($role);
+        }
+            
+        //delete options
+        delete_user_option($this->getId(), 'aam-role-expires');
+        delete_user_option($this->getId(), 'aam-original-roles');
+    }
 
     /**
      * Retrieve User based on ID
@@ -161,15 +182,23 @@ class AAM_Core_Subject_User extends AAM_Core_Subject {
         //save and return the result of operation
         return update_user_option($this->getId(), self::AAM_CAPKEY, $caps);
     }
-    
-    /**
-     * 
-     * @return type
-     */
-    public function resetCapabilities() {
-        return delete_user_option($this->getId(), self::AAM_CAPKEY);
-    }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $object
+     * @return void
+     */
+    public function resetObject($object) {
+        if ($object == 'capability') {
+            $result = delete_user_option($this->getId(), self::AAM_CAPKEY);
+        } else {
+            $result = $this->deleteOption($object);
+        }
+
+        return result;
+    }
+    
     /**
      * Update user's option
      * 

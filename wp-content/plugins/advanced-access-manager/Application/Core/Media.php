@@ -45,14 +45,6 @@ class AAM_Core_Media {
      */
     protected function __construct() {
         if (AAM_Core_Request::get('aam-media')) {
-            if (AAM_Core_Request::get('debug')) {
-                file_put_contents(
-                        dirname(__FILE__) . '/debug.log', 
-                        print_r(AAM_Core_Request::server(), 1) . "\n", 
-                        FILE_APPEND
-                );
-            }
-            
             $this->initialize();
             
             if (AAM_Core_Config::get('media-access-control', false)) {
@@ -73,7 +65,7 @@ class AAM_Core_Media {
      */
     protected function initialize() {
         $media   = filter_input(INPUT_GET, 'aam-media');
-        $request = ($media != '1' ? $media : AAM_Core_Request::server('REQUEST_URI'));
+        $request = ($media != '1' ? $media : urldecode(AAM_Core_Request::server('REQUEST_URI')));
         $root    = AAM_Core_Request::server('DOCUMENT_ROOT');
         
         $this->request     = str_replace('\\', '/', $root . $request);
@@ -92,24 +84,32 @@ class AAM_Core_Media {
             $media = $this->findMedia();
             $area  = (is_admin() ? 'backend' : 'frontend');
             
-            if (empty($media) || !$media->has("{$area}.read")) {
-                $this->printMedia($media);
-            } elseif (!empty($media)) {
-                $args = array(
-                    'hook'   => 'media_read', 
-                    'action' => "{$area}.read", 
-                    'post'   => $media->getPost()
-                );
-                    
-                if ($default = AAM_Core_Config::get('media.restricted.default')) {
-                    do_action('aam-rejected-action', $area, $args);
-                    $this->printMedia(get_post($default));
+            if (empty($media)) {
+                $this->printMedia();
+            } else {
+                $read   = $media->has('frontend.read');
+                $others = $media->has('frontend.read_others');
+                $author = ($media->post_author == get_current_user_id());
+                
+                if ($read || ($others && !$author)) {
+                    $args = array(
+                        'hook'   => 'media_read', 
+                        'action' => "{$area}.read", 
+                        'post'   => $media->getPost()
+                    );
+
+                    if ($default = AAM_Core_Config::get('media.restricted.default')) {
+                        do_action('aam-rejected-action', $area, $args);
+                        $this->printMedia(get_post($default));
+                    } else {
+                        AAM_Core_API::reject($area, $args);
+                    }
                 } else {
-                    AAM_Core_API::reject($area, $args);
+                    $this->printMedia($media);
                 }
             }
         } else {
-            $this->printMedia();
+            $this->printMedia($media);
         }
     }
     
@@ -126,19 +126,28 @@ class AAM_Core_Media {
         
         if (!empty($media)) {
             $mime = $media->post_mime_type;
-            $path = get_attached_file($media->ID); 
-        } else {
+            $path = get_attached_file($media->ID); // This can be buggy!
+        }
+        
+        if (empty($path) || !file_exists($path)) {
             $path = ABSPATH . $this->request_uri;
         }
         
+        //normalize path and strip all unexpected trails. Thanks to Antonius Hegyes
+        $path  = preg_replace('/\?.*$/', '', $path);
+        $rpath = preg_replace('/\?.*$/', '', $this->request_uri);
+        
+        //finally replace the filename with requested filename
+        $request = str_replace(basename($path), basename($rpath), $path);
+        
         if (empty($mime)) {
             if (function_exists('mime_content_type')) {
-                $mime = mime_content_type($path);
+                $mime = mime_content_type($request);
             }
         }
         
         @header('Content-Type: ' . (empty($mime) ? $type : $mime));
-        echo file_get_contents($path);
+        echo file_get_contents($request);
         exit;
     }
     

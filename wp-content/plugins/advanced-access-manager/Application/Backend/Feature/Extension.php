@@ -28,6 +28,17 @@ class AAM_Backend_Feature_Extension extends AAM_Backend_Feature_Abstract {
     public static function getTemplate() {
         return 'extension.phtml';
     }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function check() {
+        AAM::cron();
+
+        return json_encode(array('status' => 'success'));
+    }
     
     /**
      * Install an extension
@@ -43,7 +54,7 @@ class AAM_Backend_Feature_Extension extends AAM_Backend_Feature_Abstract {
         $license = AAM_Core_Request::post('license', $storedLicense);
         
         //download the extension from the server first
-        $package = AAM_Extension_Server::download($license);
+        $package = AAM_Core_Server::download($license);
         
         if (is_wp_error($package)) {
             $response = array(
@@ -116,6 +127,20 @@ class AAM_Backend_Feature_Extension extends AAM_Backend_Feature_Abstract {
         }
         
         return $response;
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function canShowLicense() {
+        $result = true;
+        
+        if (AAM_Core_API::capabilityExists('aam_display_license')) {
+            $result = !empty(AAM::getUser()->allcaps['aam_display_license']);
+        }
+        
+        return $result;
     }
     
     /**

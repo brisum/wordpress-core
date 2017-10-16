@@ -97,7 +97,12 @@ class woocsv_import
         add_action( 'wp_ajax_run_import', array ( $this, 'run_import' ) );
 
         $this->upload_dir = wp_upload_dir();
-        
+
+        add_action( 'plugins_loaded', array($this,'add_filters'));
+
+    }
+
+    public function add_filters () {
         $this->fields = apply_filters('allaerd_importer_fields', $this->fields);
     }
 

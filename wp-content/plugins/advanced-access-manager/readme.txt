@@ -1,9 +1,9 @@
 === Advanced Access Manager ===
 Contributors: vasyltech
-Tags: access, role, user, capability, page access, post access, security, login redirect, brute force attack, double authentication, membership, backend lockdown, wp-admin, 404, activity tracking
+Tags: access, role, user, capability, page access, post access, comments, security, login redirect, brute force attack, double authentication, membership, backend lockdown, wp-admin, 404, activity tracking
 Requires at least: 3.8
-Tested up to: 4.7.4
-Stable tag: 4.7.2
+Tested up to: 4.8.1
+Stable tag: 4.9.5
 
 Manage access to your website for any user, role or visitors for both frontend and backend.
 
@@ -15,18 +15,16 @@ Manage access to your website for any user, role or visitors for both frontend a
 https://www.youtube.com/watch?v=yiOhjaacNJc
 
 = Backend Lockdown =
-Restrict access to your website backend side for any user or role. For more information about this feature
-refer to the [How to lockdown WordPress backend](https://aamplugin.com/help/how-to-lockdown-wordpress-backend)
+Restrict access to your website backend side for any user or role. For more information about this feature refer to the [How to lockdown WordPress backend](https://aamplugin.com/help/how-to-lockdown-wordpress-backend)
+
+= Secure Login Widget & Shortcode =
+Use custom AJAX login widget or drop login form anywhere on your website with AAM shortcode. For more information check [How does AAM Secure Login works](https://aamplugin.com/help/how-does-aam-secure-login-works)
 
 = Manage Posts & Categories =
-Manage access to unlimited number of post, page or custom post type. With premium AAM Plus Package extension 
-also manage access to categories, custom hierarchical taxonomies or setup the default 
-access to all posts and categories. Refer to [How to manage WordPress post and category access](https://aamplugin.com/help/how-to-manage-wordpress-post-and-category-access)
-to learn more about this feature.
+Manage access to unlimited number of post, page or custom post type. With premium AAM Plus Package extension also manage access to categories, custom hierarchical taxonomies or setup the default access to all posts and categories. Refer to [How to manage WordPress post and category access](https://aamplugin.com/help/how-to-manage-wordpress-post-and-category-access) to learn more about this feature.
 
 = Track Any User Activities =
-Track any user or visitor activities on your website with AAM User Activity extension. For more information about this
-feature refer to the [How to track any WordPress user activity](https://aamplugin.com/help/how-to-track-any-wordpress-user-activity)
+Track any user or visitor activities on your website with AAM User Activity extension. For more information about this feature refer to the [How to track any WordPress user activity](https://aamplugin.com/help/how-to-track-any-wordpress-user-activity)
 
 = 404 Redirect =
 Redirect all users and visitors to specific page, URL or custom callback function when page does not exist.
@@ -41,35 +39,29 @@ Manage access to the backend menu for any user or group or users (roles).
 Create, edit or delete capabilities for any role or even user.
 
 = Manage Access Based On Geo Location And IP =
-Manage access to your website for all visitors based on referred host, IP address or geographical location.
-For more information about this feature check [How to manage access to WordPress website based on location](https://aamplugin.com/help/how-to-manage-access-to-wordpress-website-based-on-location) article
+Manage access to your website for all visitors based on referred host, IP address or geographical location. For more information about this feature check [How to manage access to WordPress website based on location](https://aamplugin.com/help/how-to-manage-access-to-wordpress-website-based-on-location) article
 
 = Manage Redirects =
-Define custom access denied or login redirects for any user or group of users. Redirect 
-user to any existing page, URL or specify your own PHP callback function to handle it.
+Define custom access denied or login redirects for any user or group of users. Redirect user to any existing page, URL or specify your own PHP callback function to handle it.
 
 = Manage Metaboxes and Widgets =
-Filter list of metaboxes and widgets on both frontend and backend for any user,
-group of users or visitors.
+Filter list of metaboxes and widgets on both frontend and backend for any user, group of users or visitors.
 
 = Content Teaser =
 Create your own content teaser for any limited post, page or custom post type.
 
 = Content Filter =
-Filter or replace blocks of your content with [aam] shortcodes. For more information about this 
-feature refer to the [How to filter WordPress post content](https://aamplugin.com/help/how-to-filter-wordpress-post-content) article
+Filter or replace blocks of your content with [aam] shortcodes. For more information about this feature refer to the [How to filter WordPress post content](https://aamplugin.com/help/how-to-filter-wordpress-post-content) article
 
 = Payments API =
 Start selling access to your website content or even user levels with premium AAM Payment extension. For 
 more information refer to the [AAM Payment extension](https://aamplugin.com/help/aam-payment-extension)
 
-= Security =
-Protect your website from brute force and dictionary attacks or activate double authentication 
-when user credentials are used from unexpected location.
-
 = Manage Roles =
-Create, edit, clone, delete any role. With AAM Role Hierarchy extension define complex 
-role hierarchy tree.
+Create, edit, clone, delete any role. Set expiration time to any role. With AAM Role Hierarchy extension define complex role hierarchy tree.
+
+= Multisite Support =
+AAM supports multisite network and allows you to sync access settings across your network or even restrict none-members from accessing one of your sites. For more information check [AAM and WordPress Multisite support](https://aamplugin.com/help/aam-and-wordpress-multisite-support).
 
 = Single point API =
 Easy to use programmatic interface that is used to develop your own custom 
@@ -109,6 +101,74 @@ Check our [help page](https://aamplugin.com/help) to find out more about AAM.
 11. Improve your website security
 
 == Changelog ==
+
+= 4.9.5 =
+* Improved user experience with AAM UI
+* Removed Welcome message
+* Fixed bug with media access
+* Added filter for AAM shordcodes so other plugins can hook to AAM
+* Optimized AAM javascript
+* Removed subscription box to reduce "UI noise" as more features are coming
+
+= 4.9.4 =
+* Significantly improved Admin Menu access management
+* Filter AAM UI based on Backend/Frontend Access Control options
+
+= 4.9.3 =
+* Simplified core implementation. First iteration to upcoming v5.0
+* Added ability to check for extension updates with "Check for Updates" button
+* Adjusted Admin Menu access control to cover none-standard menu definitions
+* Multiple improvements to the UI
+* Fixed bug with enter key not working with Login Widget
+* Improved cache implementation to cover scenario when user manually corrupted cache data
+* Fixed bug with utilities compatibility
+* Fixed bug with extended license key
+* Fixed bug with LIST and READ options checked at the same time that causes 404
+* Extended Import/Export feature to cover multisite network sync
+* Added ability to sync settings between multisite network
+
+= 4.9.2 =
+* Fixed the bug with AAM media control for files with special characters
+* Added secure login widget and shortcode
+* Deprecated Security feature
+
+= 4.9.1 =
+* Improved UI
+* Improved [aam] shortcode
+* Improved plugin activation experience
+
+= 4.9 =
+* Fixed bug with Login Redirect duplicate settings saving
+* Added ability to hide license key with aam_display_license capability
+* Added ability to export/import AAM settings
+* Improved AAM UI
+* Added ability to restrict access to the Hope page
+* Added ability to manage access to frontend ajax calls with allow_ajax_calls cap
+
+= 4.8.1 =
+* Added ability to control post_password_expires with post.password.expires config
+* Improved media access
+* Improved UI
+
+= 4.8 =
+* Fixed the bug with Media access control reported by Antonius Hegyes
+* Fixed the bug with post access properties preview
+* Fixed the bug with permanent redirects cached by some browsers
+* Fixed the bug with PasswordHash fatal error
+* Added ability to define teaser message for an individual post or category
+* Deprecated Content Teaser tab (will be removed in AAM 5.0)
+* Extended [aam context="content"] shortcode to filter content based on IP address
+* Added ability to set time expiration for roles
+
+= 4.7.6 =
+* Added ability to hide admin notification with show_admin_notices capability
+* Added ability to subscribe to the AAM updates
+* Updated refund policy term
+
+= 4.7.5 =
+* Improved Utilities tab
+* Fixed bug with post search and archive pages
+* Updated localization source
 
 = 4.7.2 =
 * Fixed the bug with Posts & Pages pagination feature

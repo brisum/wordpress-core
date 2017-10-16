@@ -7,10 +7,10 @@
  	Author:					Allaerd Mensonides
  	Author URI:				https://allaerd.org
 
- 	Version:				3.3.5
+ 	Version:				3.3.6
 
 	Requires at least: 		4.0
-	Tested up to: 			4.7
+	Tested up to: 			4.8
 
 	License: GPLv2 or later
 

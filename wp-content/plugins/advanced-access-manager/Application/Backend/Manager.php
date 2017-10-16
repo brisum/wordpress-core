@@ -88,6 +88,10 @@ class AAM_Backend_Manager {
         //control admin area
         add_action('admin_init', array($this, 'adminInit'));
         
+        //register login widget
+        add_action('widgets_init', array($this, 'registerLoginWidget'));
+        add_action('wp_ajax_nopriv_aamlogin', array($this, 'handleLogin'));
+        
         //register backend hooks and filters
         if (AAM_Core_Config::get('backend-access-control', true)) {
             AAM_Backend_Filter::register();
@@ -95,6 +99,17 @@ class AAM_Backend_Manager {
         
         //register CodePinch affiliate
         AAM_Backend_View_CodePinch::bootstrap();
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function handleLogin() {
+        $login = AAM_Core_Login::getInstance();
+
+        echo json_encode($login->execute());
+        exit;
     }
     
     /**
@@ -140,12 +155,29 @@ class AAM_Backend_Manager {
     /**
      * 
      */
+    public function registerLoginWidget() {
+        register_widget('AAM_Backend_Widget_Login');
+    }
+    
+    /**
+     * 
+     */
     protected function checkUserAccess() {
         $uid = get_current_user_id();
         
         if ($uid && AAM_Core_API::capabilityExists('access_dashboard')) {
-            if (empty(AAM::getUser()->allcaps['access_dashboard'])) {
-                AAM_Core_API::reject('backend', array('hook' => 'access_dashboard'));
+            $caps = AAM::getUser()->allcaps;
+            if (empty($caps['access_dashboard'])) {
+                //also additionally check for AJAX calls
+                if (defined('DOING_AJAX') && empty($caps['allow_ajax_calls'])) {
+                    AAM_Core_API::reject(
+                            'backend', array('hook' => 'access_dashboard')
+                    );
+                } elseif (!defined('DOING_AJAX')) {
+                    AAM_Core_API::reject(
+                            'backend', array('hook' => 'access_dashboard')
+                    );
+                }
             }
         }
     }
@@ -210,7 +242,10 @@ class AAM_Backend_Manager {
             );
         }
         
-        if (AAM::getUser()->hasCapability($cap)) {
+        $frontend = AAM_Core_Config::get('frontend-access-control', true);
+        $backend  = AAM_Core_Config::get('backend-access-control', true);
+        
+        if (($frontend || $backend) && AAM::getUser()->hasCapability($cap)) {
             add_meta_box(
                 'aam-acceess-manager', 
                 __('Access Manager', AAM_KEY) . ' <small style="color:#999999;">by AAM plugin</small>', 
@@ -248,8 +283,11 @@ class AAM_Backend_Manager {
                         $option, AAM_Backend_View::getAAMCapability()
                 );
             }
+            
+            $frontend = AAM_Core_Config::get('frontend-access-control', true);
+            $backend  = AAM_Core_Config::get('backend-access-control', true);
 
-            if (AAM::getUser()->hasCapability($cap)) {
+            if (($frontend || $backend) && AAM::getUser()->hasCapability($cap)) {
                 echo AAM_Backend_View::getInstance()->renderTermMetabox($term);
             }
         }
@@ -387,7 +425,6 @@ class AAM_Backend_Manager {
             'ajaxurl' => admin_url('admin-ajax.php'),
             'url' => array(
                 'site'     => admin_url('index.php'),
-                'jsbase'   => AAM_MEDIA . '/js',
                 'editUser' => admin_url('user-edit.php'),
                 'addUser'  => admin_url('user-new.php')
             ),

@@ -111,7 +111,7 @@ final class AAM_Core_API {
      * 
      * @access public
      */
-    public static function cURL($url, $send_cookies = TRUE, $params = array()) {
+    public static function cURL($url, $send_cookies = TRUE, $params = array(), $timeout = 20) {
         $header = array('User-Agent' => AAM_Core_Request::server('HTTP_USER_AGENT'));
 
         $cookies = AAM_Core_Request::cookie(null, array());
@@ -132,7 +132,7 @@ final class AAM_Core_API {
             'method'  => 'POST',
             'body'    => $params,
             'cookies' => $requestCookies,
-            'timeout' => 10
+            'timeout' => $timeout
         ));
     }
     
@@ -264,9 +264,9 @@ final class AAM_Core_API {
      */
     public static function redirect($rule, $args = null) {
         if (filter_var($rule, FILTER_VALIDATE_URL)) {
-            wp_redirect($rule, 301);
+            wp_redirect($rule, 307);
         } elseif (preg_match('/^[\d]+$/', $rule)) {
-            wp_safe_redirect(get_page_link($rule), 301);
+            wp_safe_redirect(get_page_link($rule), 307);
         } elseif (is_callable($rule)) {
             call_user_func($rule, $args);
         } elseif (!empty($args['callback']) && is_callable($args['callback'])) {

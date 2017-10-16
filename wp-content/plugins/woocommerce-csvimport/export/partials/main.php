@@ -6,9 +6,9 @@
     <hr>
     <form id="exportForm" method="post">
         <input type="hidden" name="action" value="woocsv_export">
-        <?php echo __('Select a header:', 'woocommerce-csvimport'); ?>
+        <?php echo __ ('Select a header:', 'woocommerce-csvimport'); ?>
         <select id="header_name" name="header_name">
-            <?php foreach ($headers as $header) : ?>
+            <?php foreach ( $headers as $header ) : ?>
                 <option value="<?php echo $header; ?>"><?php echo $header; ?></option>
             <?php endforeach; ?>
         </select>
@@ -19,10 +19,10 @@
 
 
 <h2>Previous export files</h2>
-<?php foreach ($files as $file) : ?>
+<?php foreach ( $files as $file ) : ?>
     <span>
         <a target="_blank"
-           href="<?php echo $upload_dir[ 'baseurl' ] . '/' . basename($file) ?>"><?php echo basename($file) ?></a>
+           href="<?php echo $upload_dir[ 'baseurl' ] . '/' . basename ($file) ?>"><?php echo basename ($file) ?></a>
 
         <a class="delete dashicons dashicons-dismiss" href="#" data-file-name="<?php echo $file; ?>" download>
             <span class=""></span>
@@ -36,7 +36,7 @@
 
 <script>
 
-    jQuery('a.delete').click(function () {
+    jQuery('a.delete').click(function (event) {
         var data = {
             type: "POST",
             action: 'delete_export_file',
@@ -48,6 +48,7 @@
             location.reload();
         });
 
+        event.preventDefault();
 
     });
 

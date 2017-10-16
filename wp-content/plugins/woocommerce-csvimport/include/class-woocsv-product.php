@@ -239,7 +239,6 @@ class woocsv_import_product
 
             $this->logger->log (sprintf (__ ('Product saved with ID: %s', 'woocommerce-csvimport'), $post_id));
             $this->body[ 'ID' ] = $post_id;
-
         }
 
         do_action ('woocsv_product_after_body_save', $post_id, $this);

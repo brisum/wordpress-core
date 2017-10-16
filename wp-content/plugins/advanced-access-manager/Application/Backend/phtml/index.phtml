@@ -1,5 +1,5 @@
 <?php if (defined('AAM_KEY')) { ?>
-    <div class="wrap">
+    <div class="wrap" id="aam-container">
         <div class="row">
             <div class="col-xs-12 col-md-8">
                 <div class="aam-current-subject"></div>
@@ -15,7 +15,9 @@
                             <span class="aam-help-menu" data-target="#access-manager-inside"><i class="icon-help-circled"></i></span>
                         </h3>
                         <div class="inside" id="access-manager-inside">
-                            <div class="aam-postbox-inside" id="aam-content"></div>
+                            <div class="aam-postbox-inside" id="aam-content">
+                                <p class="alert alert-info text-larger text-center" id="aam-initial-load"><?php echo AAM_Backend_View_Helper::preparePhrase('[Loading AAM UI]. Please wait few seconds. If content will not load within next 30 seconds, clear your browser cache and reload the page. If still nothing, it is most likely some sort of JavaScript or CSS conflict with one your active plugins or theme. [Contact as immediately if you are having troubles with loading AAM].', 'strong', 'strong'); ?></p>
+                            </div>
                             <div class="aam-help-context" >
                                 <div class="text-justify aam-large-padding">
                                     <p class="text-larger"><?php echo __('Appreciate your interest in Advanced Access Manager (AAM). With strong knowledge and experience in WordPress, AAM becomes a very powerful tool to manage access to your frontend and backend.', AAM_KEY); ?></p>
@@ -99,6 +101,7 @@
                                                     <th width="65%"><?php echo __('Role', AAM_KEY); ?></th>
                                                     <th><?php echo __('Action', AAM_KEY); ?></th>
                                                     <th>Level</th>
+                                                    <th>Expiration</th>
                                                 </tr>
                                             </thead>
                                             <tbody></tbody>
@@ -115,6 +118,10 @@
                                                         <div class="form-group">
                                                             <label><?php echo __('Role Name', AAM_KEY); ?><span class="aam-asterix">*</span></label>
                                                             <input type="text" class="form-control" name="name" placeholder="<?php echo __('Enter Role Name', AAM_KEY); ?>" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label><?php echo __('Role Expiration', AAM_KEY); ?> <a href="https://aamplugin.com/help/how-to-manage-wordpress-roles" target="_blank" data-toggle="tooltip" title="For how long user can have this role. Click to learn more."><i class="icon-help-circled"></i></a></label>
+                                                            <input type="text" class="form-control" name="expire" placeholder="<?php echo __('Enter Expiration Rule', AAM_KEY); ?>" />
                                                         </div>
                                                         <?php echo apply_filters('aam-add-role-ui-filter', AAM_Backend_View::getInstance()->loadPartial('role-inheritance.phtml')); ?>
                                                     </div>
@@ -137,6 +144,10 @@
                                                         <div class="form-group">
                                                             <label for="new-role-name"><?php echo __('Role Name', AAM_KEY); ?></label>
                                                             <input type="text" class="form-control" id="edit-role-name" placeholder="<?php echo __('Enter Role Name', AAM_KEY); ?>" name="name" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label><?php echo __('Role Expiration', AAM_KEY); ?> <a href="https://aamplugin.com/help/how-to-manage-wordpress-roles" target="_blank" data-toggle="tooltip" title="For how long user can have this role. Click to learn more."><i class="icon-help-circled"></i></a></label>
+                                                            <input type="text" class="form-control" name="expire" id="edit-role-expiration" placeholder="<?php echo __('Enter Expiration Rule', AAM_KEY); ?>" />
                                                         </div>
                                                         <?php do_action('aam-edit-role-ui-action'); ?>
                                                     </div>
@@ -244,10 +255,6 @@
                                     <i class="icon-star"></i>
                                     <span>Reviews</span>
                                 </a>
-                                <a target="_blank" href="https://twitter.com/aamplugin">
-                                    <i class="icon-twitter"></i>
-                                    <span>Twitter</span>
-                                </a>
                                 <a target="_blank" href="https://aamplugin.com">
                                     <i class="icon-home"></i>
                                     <span>Website</span>
@@ -261,8 +268,8 @@
                             <hr/>
                             
                             <div class="text-center">
-                            <p class="aam-promo"><strong>NEED HELP FASTER?</strong><br/>Get in touch with Google Hangouts.<br/><b>It is free.</b></p>
-                            <a href="mailto:support@aamplugin.com" class="btn btn-success" target="_blank"><i class="icon-chat-empty"></i> support@aamplugin.com</a>
+                                <p class="aam-promo"><strong>NEED HELP FASTER?</strong><br/>Get in touch with Google Hangouts.<br/><b>It is free.</b></p>
+                                <a href="mailto:support@aamplugin.com" class="btn btn-success" target="_blank"><i class="icon-chat-empty"></i> support@aamplugin.com</a>
                             </div>
                         </div>
                     </div>

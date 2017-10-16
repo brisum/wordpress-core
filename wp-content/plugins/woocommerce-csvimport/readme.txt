@@ -3,8 +3,8 @@ Contributors: Allaerd
 Tags: Woocommerce, commerce, e-commerce, ecommerce, inventory, stock, products, import, csv, multiple images, upload, export
 
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 3.3.5
+Tested up to: 4.8
+Stable tag: 3.3.6
 
 Donate link: https://allaerd.org
 
@@ -72,6 +72,9 @@ Version 3.1.0  is mayor release. Please make a backup first before you upgrade! 
 * add-ons versions will be visible in add-ons part and upgrade notices
 * export options other product types
 * support for xls, xml, feeds
+
+= 3.3.6 =
+* export works again with headers
 
 = 3.3.5 =
 * fix bug in export when there are no headers

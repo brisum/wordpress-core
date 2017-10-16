@@ -33,11 +33,31 @@ class AAM_Backend_Feature_Utility  extends AAM_Backend_Feature_Abstract {
      * 
      * @return type
      */
-    public function getUtilityOptionList() {
-        $filename = dirname(__FILE__) . '/../View/UtilityOptionList.php';
-        $options  = include $filename;
+    public function getUtilityOptionList($category = 'miscellaneous') {
+        static $options = null;
         
-        return apply_filters('aam-utility-option-list-filter', $options);
+        if (is_null($options)) {
+            $filename = dirname(__FILE__) . '/../View/UtilityOptionList.php';
+            $options  = apply_filters(
+                    'aam-utility-option-list-filter', include $filename
+            );
+        }
+        
+        $filtered = array();
+        
+        foreach($options as $id => $option) {
+            if (isset($option['category'])) {
+                $cat = $option['category'];
+            } else {
+                $cat = 'miscellaneous';
+            }
+            
+            if ($cat == $category) {
+                $filtered[$id] = $option;
+            }
+        }
+        
+        return $filtered;
     }
     
     /**
@@ -54,6 +74,31 @@ class AAM_Backend_Feature_Utility  extends AAM_Backend_Feature_Abstract {
         AAM_Core_Config::set($param, $value);
         
         return json_encode(array('status' => 'success'));
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function export() {
+        $exporter = new AAM_Core_Exporter(AAM_Core_Config::get(
+            'export', array('system' => 'roles,utilities,configpress')
+        ));
+        
+        return json_encode(array(
+            'status'  => 'success',
+            'content' => base64_encode(json_encode($exporter->run()))
+        ));
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function import() {
+        $importer = new AAM_Core_Importer(filter_input(INPUT_POST, 'json'));
+        
+        return json_encode(array('status'  => $importer->run()));
     }
     
     /**
@@ -121,7 +166,9 @@ class AAM_Backend_Feature_Utility  extends AAM_Backend_Feature_Abstract {
                 'capability' => $cap,
                 'subjects'   => array(
                     'AAM_Core_Subject_Role',
-                    'AAM_Core_Subject_Visitor'
+                    'AAM_Core_Subject_User',
+                    'AAM_Core_Subject_Visitor',
+                    'AAM_Core_Subject_Default'
                 ),
                 'view'       => __CLASS__
             ));
