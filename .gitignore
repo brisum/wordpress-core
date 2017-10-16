@@ -4,8 +4,10 @@
 ._.DS_Store
 
 vendor
+vendor-bower
 dev
 
+wp-content/db.php
 wp-content/uploads/*
 !wp-content/uploads/index.php
 wp-content/files_mf
