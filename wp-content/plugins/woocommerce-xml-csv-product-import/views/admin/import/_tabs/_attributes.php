@@ -12,7 +12,7 @@
 					<td><?php _e('Name', 'wpai_woocommerce_addon_plugin'); ?></td>
 					<td style="padding-bottom: 5px;">
 						<?php _e('Values', 'wpai_woocommerce_addon_plugin'); ?>
-						<a href="#help" class="wpallimport-help" title="<?php _e('Separate mutiple values with a |', 'wpai_woocommerce_addon_plugin') ?>" style="top:-1px;">?</a>
+						<a href="#help" class="wpallimport-help" title="<?php _e('Separate multiple values with a |', 'wpai_woocommerce_addon_plugin') ?>" style="top:-1px;">?</a>
 					</td>
 					<td></td>
 				</tr>

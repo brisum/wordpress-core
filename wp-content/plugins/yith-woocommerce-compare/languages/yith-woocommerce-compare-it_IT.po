@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: YITH Woocommerce Compare\n"
-"POT-Creation-Date: 2016-10-19 15:38+0200\n"
-"PO-Revision-Date: 2016-10-19 15:38+0200\n"
+"POT-Creation-Date: 2017-10-24 16:28+0200\n"
+"PO-Revision-Date: 2017-10-24 16:28+0200\n"
 "Last-Translator: Nicola Mustone <mail@nicolamustone.it>\n"
 "Language-Team: Your Inspiration Themes <support@yithemes.com>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.10\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-KeywordsList: __;_e;_x\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -17,33 +17,33 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: plugin-fw\n"
 
-#: includes/class.yith-woocompare-admin.php:122
-#: includes/class.yith-woocompare-admin.php:146
+#: includes/class.yith-woocompare-admin.php:119
+#: includes/class.yith-woocompare-admin.php:143
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: includes/class.yith-woocompare-admin.php:124
-#: includes/class.yith-woocompare-admin.php:150
+#: includes/class.yith-woocompare-admin.php:121
+#: includes/class.yith-woocompare-admin.php:147
 msgid "Premium Version"
 msgstr "Versione premium"
 
-#: includes/class.yith-woocompare-admin.php:156
-#: includes/class.yith-woocompare-admin.php:157
-#: includes/class.yith-woocompare-frontend.php:446
-#: plugin-options/general-options.php:40 plugin-options/general-options.php:41
+#: includes/class.yith-woocompare-admin.php:153
+#: includes/class.yith-woocompare-admin.php:154
+#: includes/class.yith-woocompare-frontend.php:484
+#: plugin-options/general-options.php:41 plugin-options/general-options.php:42
 #: widgets/class.yith-woocompare-widget.php:51
 msgid "Compare"
 msgstr "Confronta"
 
-#: includes/class.yith-woocompare-admin.php:220
+#: includes/class.yith-woocompare-admin.php:217
 msgid "Plugin Documentation"
 msgstr "Documentazione plugin"
 
-#: includes/class.yith-woocompare-admin.php:240
+#: includes/class.yith-woocompare-admin.php:237
 msgid "YITH WooCommerce Compare Activated"
 msgstr "YITH WooCommerce Compare attivato"
 
-#: includes/class.yith-woocompare-admin.php:241
+#: includes/class.yith-woocompare-admin.php:238
 #, php-format
 msgid ""
 "In the YIT Plugin tab you can find the YITH WooCommerce Compare options. "
@@ -57,11 +57,11 @@ msgstr ""
 "WooCommerce Compare con molte nuove opzioni, <a href=\"%s\">scoprila subito</"
 "a>."
 
-#: includes/class.yith-woocompare-admin.php:252
+#: includes/class.yith-woocompare-admin.php:249
 msgid "YITH WooCommerce Compare Updated"
 msgstr "YITH WooCommerce Compare aggiornato"
 
-#: includes/class.yith-woocompare-admin.php:253
+#: includes/class.yith-woocompare-admin.php:250
 #, php-format
 msgid ""
 "From now on, you can find all the options of YITH WooCommerce Compare under "
@@ -77,27 +77,31 @@ msgstr ""
 "Compare è stato aggiornato includendo nuove opzioni, <a href=\"%s\">scopri "
 "la versione PREMIUM</a>."
 
-#: includes/class.yith-woocompare-admin.php:398
+#: includes/class.yith-woocompare-admin.php:394
 msgid "Do you want to hard crop the image?"
 msgstr "Vuoi ritagliare questa immagine?"
 
-#: includes/class.yith-woocompare-frontend.php:186
+#: includes/class.yith-woocompare-frontend.php:207
 msgid "Added"
 msgstr "Aggiunto"
 
-#: includes/class.yith-woocompare-frontend.php:187 templates/compare.php:49
+#: includes/class.yith-woocompare-frontend.php:208 templates/compare.php:49
 msgid "Product Comparison"
 msgstr "Comparazione Prodotto"
 
-#: includes/class.yith-woocompare-frontend.php:330
+#: includes/class.yith-woocompare-frontend.php:213
+msgid "Close"
+msgstr "Chiudi"
+
+#: includes/class.yith-woocompare-frontend.php:368
 msgid "In stock"
 msgstr "In stock"
 
-#: includes/class.yith-woocompare-frontend.php:649
+#: includes/class.yith-woocompare-frontend.php:675
 msgid "No products to compare"
 msgstr "Nessun prodotto da comparare"
 
-#: includes/class.yith-woocompare-frontend.php:659 templates/compare.php:109
+#: includes/class.yith-woocompare-frontend.php:688 templates/compare.php:114
 msgid "Remove"
 msgstr "Rimuovi"
 
@@ -134,7 +138,7 @@ msgstr "Peso"
 msgid "Dimensions"
 msgstr "Dimensioni"
 
-#: init.php:40
+#: init.php:42
 msgid ""
 "YITH WooCommerce Compare is enabled but not effective. It requires "
 "WooCommerce in order to work."
@@ -142,7 +146,7 @@ msgstr ""
 "YITH WooCommerce Compare è abilitato ma non in funzione. Devi aver "
 "installato WooCommerce perché questo possa funzionare correttamente."
 
-#: init.php:48
+#: init.php:50
 msgid ""
 "You can't activate the free version of YITH WooCommerce Compare while you "
 "are using the premium one."
@@ -159,75 +163,74 @@ msgid "Link or Button"
 msgstr "Collegamento o pulsante"
 
 #: plugin-options/general-options.php:25
-msgid "Choose if you want to use a link or a button for the action button."
+msgid "Choose if you want to use a link or a button for the comepare actions."
 msgstr ""
-"Scegli se vuoi usare un collegamento o un pulsante per l'azione di "
-"\"Confronto\""
+"Scegli se utilizzare un linko un pulsante per confrontare i tuoi prodotti."
 
-#: plugin-options/general-options.php:31
+#: plugin-options/general-options.php:32
 msgid "Link"
 msgstr "Collegamento"
 
-#: plugin-options/general-options.php:32
+#: plugin-options/general-options.php:33
 msgid "Button"
 msgstr "Pulsante"
 
-#: plugin-options/general-options.php:37
+#: plugin-options/general-options.php:38
 msgid "Link/Button text"
 msgstr "Testo collegamento/pulsante"
 
-#: plugin-options/general-options.php:38
+#: plugin-options/general-options.php:39
 msgid "Type the text to use for the button or the link of the compare."
 msgstr ""
 "Inserisci il testo da utilizzare per il pulsante o il collegamento che ti "
 "permetterà di confrontare i prodotti."
 
-#: plugin-options/general-options.php:46
+#: plugin-options/general-options.php:47
 msgid "Show button in single product page"
 msgstr "Mostra pulsante nella pagina dettaglio prodotto"
 
-#: plugin-options/general-options.php:47
+#: plugin-options/general-options.php:48
 msgid "Say if you want to show the button in the single product page."
 msgstr ""
 "Scegli se vuoi mostrare il pulsante nella pagina dettaglio del prodotto."
 
-#: plugin-options/general-options.php:55
+#: plugin-options/general-options.php:56
 msgid "Show button in products list"
 msgstr "Mostra pulsante nella lista prodotti"
 
-#: plugin-options/general-options.php:56
+#: plugin-options/general-options.php:57
 msgid "Say if you want to show the button in the products list."
 msgstr "Imposta se vuoi mostrare il pulsante nella lista prodotti."
 
-#: plugin-options/general-options.php:64
+#: plugin-options/general-options.php:65
 msgid "Open automatically lightbox"
 msgstr "Apri lightbox automaticamente"
 
-#: plugin-options/general-options.php:65
+#: plugin-options/general-options.php:66
 msgid "Open link after click into \"Compare\" button\"."
 msgstr "Apri pagina dopo aver cliccato sul pulsante \"Confronta\"."
 
-#: plugin-options/general-options.php:78
+#: plugin-options/general-options.php:79
 msgid "Table Settings"
 msgstr "Impostazioni tabella."
 
-#: plugin-options/general-options.php:85
+#: plugin-options/general-options.php:86
 msgid "Table title"
 msgstr "Titolo tabella"
 
-#: plugin-options/general-options.php:86
+#: plugin-options/general-options.php:87
 msgid "Type the text to use for the table title."
 msgstr "Inserisci il testo da utilizzare come titolo della tabella."
 
-#: plugin-options/general-options.php:88 plugin-options/general-options.php:89
+#: plugin-options/general-options.php:89 plugin-options/general-options.php:90
 msgid "Compare products"
 msgstr "Confronta prodotti"
 
-#: plugin-options/general-options.php:94
+#: plugin-options/general-options.php:95
 msgid "Fields to show"
 msgstr "Campi da mostrare"
 
-#: plugin-options/general-options.php:95
+#: plugin-options/general-options.php:96
 msgid ""
 "Select the fields to show in the comparison table and order them by "
 "drag&drop (are included also the woocommerce attributes)"
@@ -235,27 +238,27 @@ msgstr ""
 "Seleziona i campi da mostrare nella tabella di comparazione e ordinali "
 "attraverso il drag&drop (sono inclusi anche gli attributi di woocommerce)"
 
-#: plugin-options/general-options.php:103
+#: plugin-options/general-options.php:104
 msgid "Repeat \"Price\" field"
 msgstr "Ripeti campo \"Prezzo\""
 
-#: plugin-options/general-options.php:104
+#: plugin-options/general-options.php:105
 msgid "Repeat the \"Price\" field at the end of the table"
 msgstr "Ripeti il campo \"Prezzo\" alla fine di ogni tabella"
 
-#: plugin-options/general-options.php:112
+#: plugin-options/general-options.php:113
 msgid "Repeat \"Add to cart\" field"
 msgstr "Ripeti campo \"Aggiungi al carrello\""
 
-#: plugin-options/general-options.php:113
+#: plugin-options/general-options.php:114
 msgid "Repeat the \"Add to cart\" field at the end of the table"
 msgstr "Ripeti il campo \"Aggiungi al carrello\" alla fine di ogni tabella"
 
-#: plugin-options/general-options.php:121
+#: plugin-options/general-options.php:122
 msgid "Image size"
 msgstr "Dimensione immagine"
 
-#: plugin-options/general-options.php:122
+#: plugin-options/general-options.php:123
 msgid "Set the size for the images"
 msgstr "Imposta la dimensione per le immagini"
 
@@ -457,11 +460,11 @@ msgid ""
 "popup to check its existence. "
 msgstr ""
 
-#: templates/compare.php:74
+#: templates/compare.php:76
 msgid "Close window [X]"
 msgstr "Chiudi finestra [X]"
 
-#: templates/compare.php:101
+#: templates/compare.php:103
 msgid "No products added in the compare table."
 msgstr "Nessun prodotto aggiunto nella tabella di comparazione."
 
@@ -477,6 +480,11 @@ msgstr "YITH WooCommerce Compare Widget"
 #: widgets/class.yith-woocompare-widget.php:50
 msgid "Clear all"
 msgstr "Cancella tutti"
+
+#~ msgid "Choose if you want to use a link or a button for the action button."
+#~ msgstr ""
+#~ "Scegli se vuoi usare un collegamento o un pulsante per l'azione di "
+#~ "\"Confronto\""
 
 #~ msgid ""
 #~ "An advanced option panel that let you change all the colors of the "
@@ -534,11 +542,6 @@ msgstr "Cancella tutti"
 #~ msgstr ""
 #~ "YITH WooCommerce Compare Premium è abilitato ma non in funzione. Devi "
 #~ "aver installato WooCommerce perché questo possa funzionare correttamente."
-
-#~ msgid ""
-#~ "Choose if you want to use a link or a button for the comepare actions."
-#~ msgstr ""
-#~ "Scegli se utilizzare un linko un pulsante per confrontare i tuoi prodotti."
 
 #~ msgid "Page or Popup"
 #~ msgstr "Pagina o popup"

@@ -3,13 +3,13 @@
 Contributors: yithemes
 Tags: woocommerce compare, compare products, product compare, product comparison, compare table
 Requires at least: 3.5.1
-Tested up to: 4.8
-Stable tag: 2.2.1
+Tested up to: 4.8.2
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 YITH WooCommerce Compare allows you to compare more products of your shop in one complete table.
-WooCommerce Compatible up to 3.1
+WooCommerce Compatible up to 3.2
 
 == Description ==
 
@@ -65,6 +65,13 @@ yith-woocommerce-compare-<WORDPRESS LOCALE >.mo
 3. The settings of plugin
 
 == Changelog ==
+
+= 2.2.2 = Released on Oct 24, 2017
+
+* New: Support to WooCommerce 3.2.1.
+* New: Support to WordPress 4.8.2.
+* Update: Plugin Core.
+* Update: Language Files.
 
 = 2.2.1 = Released on Jul 05, 2017
 
@@ -244,8 +251,8 @@ If you have suggestions about how to improve YITH WooCommerce Compare, you can [
 * English (Default)
 * Italiano
 
-If you have created your own language pack, or have an update for an existing one, you can send [gettext PO and MO file](http://codex.wordpress.org/Translating_WordPress "Translating WordPress")
-[use](http://yithemes.com/contact/ "Your Inspiration Themes") so we can bundle it into YITH WooCommerce Compare Languages.
+If you can't find this plugin in your language and want to translate it, use the dedicated tool at [Translating WordPress](https://translate.wordpress.org/locale/it/default/wp-plugins/yith-woocommerce-compare "Translating WordPress").
+Or, if you have created your own language pack, or have an update for an existing one, you can send it as an email attachment from our [Contacts page](http://yithemes.com/contact/ "Your Inspiration Themes") and we will bundle into YITH WooCommerce Compare.
 
 == Documentation ==
 
@@ -253,12 +260,9 @@ Full documentation is available [here](http://yithemes.com/docs-plugins/yith-woo
 
 == Upgrade notice ==
 
-= 2.2.1 = Released on Jul 05, 2017
+= 2.2.2 = Released on Oct 24, 2017
 
-* New: Support to WooCommerce 3.1.
-* New: Support to WordPress 4.8.
-* New: Russian Translation.
-* New: Slovenian Translation.
+* New: Support to WooCommerce 3.2.1.
+* New: Support to WordPress 4.8.2.
 * Update: Plugin Core.
 * Update: Language Files.
-* Fix: WPML and Add to cart action from popup.

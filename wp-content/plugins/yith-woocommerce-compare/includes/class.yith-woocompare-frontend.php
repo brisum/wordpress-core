@@ -173,7 +173,9 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
 
                 // check for deleted|private products
                 $product = wc_get_product( $product_id );
-                if( ! $product || yit_get_prop( $product, 'post_status' ) !== 'publish' ) {
+                $post_status = yit_get_prop( $product, 'post_status' );
+
+                if( ! $product || $post_status !== 'publish' ) {
                     continue;
                 }
 
@@ -207,7 +209,8 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
                 'auto_open' => get_option( 'yith_woocompare_auto_open', 'yes' ),
                 'loader'    => YITH_WOOCOMPARE_ASSETS_URL . '/images/loader.gif',
                 'button_text' => get_option('yith_woocompare_button_text'),
-                'cookie_name' => $this->cookie_name
+                'cookie_name' => $this->cookie_name,
+                'close_label' => _x( 'Close', 'Label for popup close icon', 'yith-woocommerce-compare' )
             ));
 
             wp_localize_script( 'yith-woocompare-main', 'yith_woocompare', $args );
@@ -279,7 +282,12 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
                 $sitepress->switch_lang( $lang, true );
             }
 
-            extract( $this->_vars() );
+            $args = $this->_vars();
+            $args['fixed']  = false;
+            $args['iframe'] = 'yes';
+
+            //extract args
+            extract( $args );
 
             // remove all styles from compare template
             add_action('wp_print_styles', array( $this, 'remove_all_styles' ), 100);
@@ -287,6 +295,9 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
             // remove admin bar
             remove_action( 'wp_footer', 'wp_admin_bar_render', 1000 );
             remove_action( 'wp_head', '_admin_bar_bump_cb' );
+
+            // remove filters before render compare popup
+            add_action( 'wp_enqueue_scripts', array( $this, 'actions_before_load_popup' ), 99 );
 
             $plugin_path   = YITH_WOOCOMPARE_TEMPLATE_PATH . '/' . $this->template_file;
 
@@ -407,7 +418,7 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
         public function view_table_url( $product_id = false ) {
 	        $url_args = array(
 		        'action'    => $this->action_view,
-		        'iframe'    => true
+		        'iframe'    => 'yes'
 	        );
 
             $lang = defined( 'ICL_LANGUAGE_CODE' ) ? ICL_LANGUAGE_CODE : false;
@@ -761,6 +772,22 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
         public function wc_get_product( $product_id ){
             $wc_get_product = function_exists( 'wc_get_product' ) ? 'wc_get_product' : 'get_product';
             return $wc_get_product( $product_id );
+        }
+        
+        
+        /**
+         * Do action before loads compare popup
+         * 
+         * @since 2.1.1
+         * @author Francesco Licandro
+         */
+        public function actions_before_load_popup(){
+            // removes WooCommerce Product Filter scripts
+            wp_dequeue_script( 'prdctfltr-main-js' );
+            wp_dequeue_script( 'prdctfltr-history' );
+            wp_dequeue_script( 'prdctfltr-ionrange-js' );
+            wp_dequeue_script( 'prdctfltr-isotope-js' );
+            wp_dequeue_script( 'prdctfltr-scrollbar-js' );
         }
     }
 }

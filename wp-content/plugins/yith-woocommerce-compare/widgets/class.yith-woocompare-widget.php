@@ -48,7 +48,7 @@ if( !class_exists( 'YITH_WOOCOMPARE' ) ) {
             </ul>
 
             <a href="<?php echo $yith_woocompare->obj->remove_product_url('all') ?>" data-product_id="all" class="clear-all" rel="nofollow"><?php _e( 'Clear all', 'yith-woocommerce-compare' ) ?></a>
-            <a href="<?php echo add_query_arg( array( 'iframe' => 'true' ), $yith_woocompare->obj->view_table_url() ) ?>" class="compare added button" rel="nofollow"><?php _e( 'Compare', 'yith-woocommerce-compare' ) ?></a>
+            <a href="<?php echo $yith_woocompare->obj->view_table_url() ?>" class="compare added button" rel="nofollow"><?php _e( 'Compare', 'yith-woocommerce-compare' ) ?></a>
 
             <?php echo $after_widget;
         }

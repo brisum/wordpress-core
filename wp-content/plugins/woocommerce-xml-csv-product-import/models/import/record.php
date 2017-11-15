@@ -1195,7 +1195,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
 			$this->pushmeta($pid, '_manage_stock', $manage_stock);	
 			$this->pushmeta($pid, '_backorders', $backorders);	
 
-			if ( $stock_status ) {							
+			if ( $this->is_update_cf('_stock') && $stock_status ) {							
 				update_post_meta( $pid, '_stock_status', $stock_status );
 			}
 
