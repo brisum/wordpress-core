@@ -68,6 +68,7 @@ jQuery(document).ready(function($) {
                 width: '90%',
                 height: '90%',
                 className: 'yith_woocompare_colorbox',
+                close: yith_woocompare.close_label,
                 onClosed: function(){
                     var widget_list = $('.yith-woocompare-widget ul.products-list'),
                         data = {
