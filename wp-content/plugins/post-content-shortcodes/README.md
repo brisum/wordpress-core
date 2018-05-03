@@ -5,9 +5,9 @@
 
 **Requires at least:** 4.3
 
-**Tested up to:** 4.7.3
+**Tested up to:** 4.9.4
 
-**Stable tag:** 1.0
+**Stable tag:** 1.0.1.1
 
 
 Adds shortcodes to display the content of a post or a list of posts.
@@ -178,11 +178,11 @@ The `[post-content]` shortcode will not output any extra HTML at all. It simply 
 
 The `[post-list]` shortcode, however, does output some HTML to actually format the list. The default HTML code output looks like:
 
-`
-&lt;ul class="post-list"&gt;
-&lt;li class="listed-post"&gt;&lt;a href="%permalink%" title="%title%"&gt;%title&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-`
+```html
+<ul class="post-list">
+<li class="listed-post"><a href="%permalink%" title="%title%">%title</a></li>
+</ul>
+```
 
 ### How do I change the HTML output for the post-list? ###
 
@@ -253,14 +253,25 @@ Unfortunately, because of the way the Views plugin processes posts, the [wpv-pos
 
 ## Screenshots
 
-1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles enabled 
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles **enabled** 
 ![post-list shortcode example](screenshot.png?raw=true)
 1. An example of the post-content shortcode being used within the Twenty Seventeen theme 
 ![post-content shortcode example](screenshot2.png?raw=true)
-1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles disabled 
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles **disabled** 
 ![post-list shortcode example with no default styles](screenshot3.png?raw=true)
 
 ## Changelog ##
+
+### 1.0.1.1 ###
+* Adds i18n and l10n features so the plugin can be properly translated in the future
+* Attempts to fix errant PHP warning about string/array conversion ([h/t @codingbee](https://wordpress.org/support/topic/getting-error-when-displaying-content-inside-widget/))
+
+### 1.0.1 ###
+* Fixes issue with the permalink that's used in the "Read More" link on cross-site post lists
+* Turns off debug message when site is installed on non-multisite install
+* Update WP version compatibility
+* Begin testing Gutenberg compatibility
+* Fix undefined index warnings about `enable-site-settings` and `tax_query`
 
 ### 1.0 ###
 * Fixes PHP fatal error thanks to GitHub user [@stefanogualdi](https://github.com/stefanogualdi)
@@ -366,6 +377,15 @@ Unfortunately, because of the way the Views plugin processes posts, the [wpv-pos
 This is the first version of this plugin
 
 ## Upgrade Notice ##
+
+### 1.0.1.1 ###
+
+* Adds i18n and l10n features
+* Fixes PHP warning
+
+### 1.0.1 ###
+
+* Fixes issue with permalinks used for Read More in cross-site post lists
 
 ### 0.6 ###
 

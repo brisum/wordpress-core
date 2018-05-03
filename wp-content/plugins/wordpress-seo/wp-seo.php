@@ -1,23 +1,21 @@
 <?php
 /**
- * @package WPSEO\Main
- */
-
-/**
+ * Yoast SEO Plugin.
+ *
+ * @package   WPSEO\Main
+ * @copyright Copyright (C) 2008-2016, Yoast BV - support@yoast.com
+ * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, version 3 or higher
+ *
+ * @wordpress-plugin
  * Plugin Name: Yoast SEO
- * Version: 5.8
- * Plugin URI: https://yoast.com/wordpress/plugins/seo/#utm_source=wpadmin&utm_medium=plugin&utm_campaign=wpseoplugin
+ * Version:     7.4.1
+ * Plugin URI:  https://yoa.st/1uj
  * Description: The first true all-in-one SEO solution for WordPress, including on-page content analysis, XML sitemaps and much more.
- * Author: Team Yoast
- * Author URI: https://yoast.com/
+ * Author:      Team Yoast
+ * Author URI:  https://yoa.st/1uk
  * Text Domain: wordpress-seo
  * Domain Path: /languages/
- * License: GPL v3
- */
-
-/**
- * Yoast SEO Plugin
- * Copyright (C) 2008-2016, Yoast BV - support@yoast.com
+ * License:     GPL v3
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,3 +43,18 @@ if ( ! defined( 'WPSEO_FILE' ) ) {
 
 // Load the Yoast SEO plugin.
 require_once dirname( WPSEO_FILE ) . '/wp-seo-main.php';
+
+function yst_custom_upload_mimes( $existing_mimes = array() ) {
+	// Add EPS to the allowed uploaded file types.
+	$existing_mimes['eps'] = 'application/postscript';
+
+	// Add CSV to the allowed uploaded file types.
+	$existing_mimes['csv'] = 'text/csv';
+
+	// Add SVG to the allowed uploaded file types.
+	$existing_mimes['svg'] = 'image/svg+xml';
+
+	return $existing_mimes;
+}
+
+add_filter( 'upload_mimes', 'yst_custom_upload_mimes' );

@@ -33,7 +33,9 @@ class AAM_Backend_Authorization {
      */
     protected function __construct() {
         //control admin area
-        add_action('admin_init', array($this, 'checkScreenAccess'));
+        if (!defined( 'DOING_AJAX' ) || !DOING_AJAX) {
+            add_action('admin_init', array($this, 'checkScreenAccess'));
+        }
         
         //additional filter for user capabilities
         add_filter('user_has_cap', array($this, 'isUserCapable'), 999, 3);
@@ -52,7 +54,7 @@ class AAM_Backend_Authorization {
      */
     public function checkScreenAccess() {
         global $plugin_page;
-
+        
         //compile menu
         $menu = $plugin_page;
         
@@ -64,7 +66,7 @@ class AAM_Backend_Authorization {
             
             if (!empty($taxonomy)) {
                 $menu .= '?taxonomy=' . $taxonomy;
-            } elseif (!empty($postType)) {
+            } elseif (!empty($postType) && ($postType != 'post')) {
                 $menu .= '?post_type=' . $postType;
             } elseif (!empty($page)) {
                 $menu .= '?page=' . $page;

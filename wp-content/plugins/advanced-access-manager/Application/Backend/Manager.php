@@ -45,8 +45,11 @@ class AAM_Backend_Manager {
         //map AAM UI specific capabilities
         add_filter('map_meta_cap', array($this, 'mapMetaCap'), 10, 4);
         
+        //user profile update action
+        add_action('profile_update', array($this, 'profileUpdate'), 10, 2);
+        
         //post title decorator
-        add_filter('the_title', array($this, 'theTitle'), 10, 2);
+        add_filter('the_title', array($this, 'theTitle'), 999, 2);
         
         //screen options & contextual help hooks
         add_filter('screen_options_show_screen', array($this, 'screenOptions'));
@@ -110,6 +113,12 @@ class AAM_Backend_Manager {
         }
         
         AAM_Extension_Repository::getInstance()->hasUpdates();
+        
+        if (version_compare(PHP_VERSION, '5.3.0') == -1) {
+            AAM_Core_Console::add(
+                __('AAM requires PHP version 5.3.0 or higher to function properly', AAM_KEY)
+            );
+        }
     }
     
     /**
@@ -129,14 +138,48 @@ class AAM_Backend_Manager {
     }
     
     /**
+     * Profile updated hook
      * 
-     * @param type $title
-     * @param type $id
-     * @return type
+     * Adjust expiration time and user cache if profile updated
+     * 
+     * @param int     $id
+     * @param WP_User $old
+     * 
+     * @return void
+     * 
+     * @access public
      */
-    public function theTitle($title, $id) {
-        if (empty($title)) {
-            $title = '[No Title]: ID ' . $id;
+    public function profileUpdate($id, $old) {
+        $user = get_user_by('ID', $id);
+        
+        //role changed?
+        if (implode('', $user->roles) != implode('', $old->roles)) {
+            AAM_Core_Cache::clear($id);
+            
+            //check if role has expiration data set
+            $role   = (is_array($user->roles) ? $user->roles[0] : '');
+            $expire = AAM_Core_API::getOption("aam-role-{$role}-expiration", '');
+            
+            if ($expire) {
+                update_user_option($id, "aam-original-roles", $old->roles);
+                update_user_option($id, "aam-role-expires", strtotime($expire));
+            }
+        }
+    }
+    
+    /**
+     * Filter post title
+     * 
+     * @param string $title
+     * @param int    $id
+     * 
+     * @return string
+     * 
+     * @access public
+     */
+    public function theTitle($title, $id = null) {
+        if (empty($title) && AAM::isAAM()) { //apply filter only for AAM page
+            $title = '[No Title]: ID ' . ($id ? $id : '[No ID]');
         }
         
         return $title;

@@ -2,8 +2,8 @@
 Contributors: cgrymala
 Tags: shortcode, clone, syndication, post content, post list
 Requires at least: 4.3
-Tested up to: 4.7.3
-Stable tag: 1.0
+Tested up to: 4.9.4
+Stable tag: 1.0.1.1
 
 Adds shortcodes to display the content of a post or a list of posts.
 
@@ -248,11 +248,22 @@ Unfortunately, because of the way the Views plugin processes posts, the [wpv-pos
 
 == Screenshots ==
 
-1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles enabled
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles **enabled**
 1. An example of the post-content shortcode being used within the Twenty Seventeen theme
-1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles disabled
+1. An example of the post-list shortcode being used within the Twenty Seventeen theme, with the default PCS styles **disabled**
 
 == Changelog ==
+
+= 1.0.1.1 =
+* Adds i18n and l10n features so the plugin can be properly translated in the future
+* Attempts to fix errant PHP warning about string/array conversion ([h/t @codingbee](https://wordpress.org/support/topic/getting-error-when-displaying-content-inside-widget/))
+
+= 1.0.1 =
+* Fixes issue with the permalink that's used in the "Read More" link on cross-site post lists
+* Turns off debug message when site is installed on non-multisite install
+* Update WP version compatibility
+* Begin testing Gutenberg compatibility
+* Fix undefined index warnings about `enable-site-settings` and `tax_query`
 
 = 1.0 =
 
@@ -359,6 +370,15 @@ Unfortunately, because of the way the Views plugin processes posts, the [wpv-pos
 This is the first version of this plugin
 
 == Upgrade Notice ==
+
+= 1.0.1.1 =
+
+* Adds i18n and l10n features
+* Fixes PHP warning
+
+= 1.0.1 =
+
+* Fixes issue with permalinks used for Read More in cross-site post lists
 
 = 0.6 =
 

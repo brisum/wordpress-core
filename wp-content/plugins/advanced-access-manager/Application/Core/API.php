@@ -151,7 +151,7 @@ final class AAM_Core_API {
         } elseif(isset($wp_roles)) {
             $roles = $wp_roles;
         } else {
-            $roles = $wp_roles = new WP_Roles();
+            $roles = new WP_Roles();
         }
         
         return $roles;
@@ -215,7 +215,7 @@ final class AAM_Core_API {
     public static function capabilityExists($cap) {
         $caps = self::getAllCapabilities();
         
-        return (isset($caps[$cap]) ? true : false);
+        return (is_string($cap) && array_key_exists($cap, $caps) ? true : false);
     }
     
     /**
@@ -237,7 +237,7 @@ final class AAM_Core_API {
 
             if (!empty($type) && ($type == 'login')) {
                 $redirect = add_query_arg(
-                        array('aam-redirect' => 'login'), 
+                        array('reason' => 'restricted'), 
                         wp_login_url(AAM_Core_Request::server('REQUEST_URI'))
                 );
             } elseif (!empty($type) && ($type != 'default')) {
@@ -314,7 +314,9 @@ final class AAM_Core_API {
         }
         
         if (function_exists('get_plugin_data')) {
-            $data    = get_plugin_data(dirname(__FILE__) . '/../../aam.php');
+            $data = get_plugin_data(
+                    realpath(dirname(__FILE__) . '/../../aam.php')
+            );
             $version = (isset($data['Version']) ? $data['Version'] : null);
         }
         
@@ -356,6 +358,15 @@ final class AAM_Core_API {
             }
         }
         
+        if (is_single()) {
+            $post = self::getCurrentPost();
+            $in   = ($post ? array_search($post->ID, $filtered) : false);
+            
+            if ($in !== false) {
+                $filtered = array_splice($filtered, $in, 1);
+            }
+        }
+        
         return (is_array($filtered) ? $filtered : array());
     }
     
@@ -392,8 +403,8 @@ final class AAM_Core_API {
                         $cache[] = $post->ID;
                     }
                     
-                    AAM_Core_Cache::set(AAM::getUser(), $key . '_checked', $checked);
-                    AAM_Core_Cache::set(AAM::getUser(), $key, $cache);
+                    AAM_Core_Cache::set($key . '_checked', $checked);
+                    AAM_Core_Cache::set($key, $cache);
                     $counter++;
                 }
             } else {

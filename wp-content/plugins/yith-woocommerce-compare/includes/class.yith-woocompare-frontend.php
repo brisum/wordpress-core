@@ -369,6 +369,11 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
                             }
                             $product->fields[$field] = sprintf( '<span>%s</span>', esc_html( $availability['availability'] ) );
                             break;
+                        case 'sku':
+                            $sku = $product->get_sku();
+                            ! $sku && $sku = '-';
+                            $product->fields[$field] = $sku;
+                            break;
                         case 'weight':
                             if( $weight = $product->get_weight() ){
                                 $weight = wc_format_localized_decimal( $weight ) . ' ' . esc_attr( get_option( 'woocommerce_weight_unit' ) );
@@ -753,6 +758,11 @@ if( !class_exists( 'YITH_Woocompare_Frontend' ) ) {
                 if ( ! empty( $product ) ) {
                     $product_id = $product->ID;
                 }
+            }
+
+            // make sure to get always the product id of current language
+            if( function_exists( 'wpml_object_id_filter' ) ) {
+                $product_id = wpml_object_id_filter( $product_id, 'product', false );
             }
 
             // if product ID is 0, maybe the product doesn't exists or is wrong.. in this case, doesn't show the button

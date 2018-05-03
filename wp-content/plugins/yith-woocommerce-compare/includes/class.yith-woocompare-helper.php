@@ -38,6 +38,7 @@ if( !class_exists( 'YITH_Woocompare_Helper' ) ) {
          *
          * @since 1.0.0
          * @access public
+         * @param Boolean $with_attr
          */
         public static function standard_fields( $with_attr = true ) {
 
@@ -47,6 +48,7 @@ if( !class_exists( 'YITH_Woocompare_Helper' ) ) {
                 'price' => __( 'Price', 'yith-woocommerce-compare' ),
                 'add-to-cart' => __( 'Add to cart', 'yith-woocommerce-compare' ),
                 'description' => __( 'Description', 'yith-woocommerce-compare' ),
+                'sku'           => __( 'Sku', 'yith-woocommerce-compare' ),
                 'stock' => __( 'Availability', 'yith-woocommerce-compare' ),
                 'weight'        => __( 'Weight', 'yith-woocommerce-compare' ),
                 'dimensions'    => __( 'Dimensions', 'yith-woocommerce-compare' )
@@ -55,7 +57,7 @@ if( !class_exists( 'YITH_Woocompare_Helper' ) ) {
 	        if( $with_attr )
 	            $fields = array_merge( $fields, YITH_Woocompare_Helper::attribute_taxonomies() );
 
-	        return $fields;
+	        return apply_filters( 'yith_woocompare_standard_fields_array', $fields );
         }
 
         /*

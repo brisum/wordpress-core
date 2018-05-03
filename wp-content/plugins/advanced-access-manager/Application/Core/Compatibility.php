@@ -27,11 +27,12 @@ class AAM_Core_Compatibility {
         define('AAM_REDIRECT', '99');
         define('AAM_CONTENT_TEASER', '99');
         define('AAM_LOGIN_REDIRECT', '99');
+        define('AAM_CONFIGPRESS', '99');
         //TODO - Remove this in Jul 2018
         
         //caching filter & action
         add_filter(
-            'aam-read-cache-filter', 'AAM_Core_Compatibility::readCache', 10, 3
+            'aam-read-cache-filter', 'AAM_Core_Compatibility::readCache', 10, 2
         );
         
         //utilities option
@@ -42,11 +43,10 @@ class AAM_Core_Compatibility {
      * 
      * @param type $value
      * @param type $option
-     * @param type $subject
      * @return type
      */
-    public static function readCache($value, $option, $subject) {
-        return AAM_Core_Cache::get($option);
+    public static function readCache($value, $option) {
+        return AAM_Core_Cache::get($option, $value);
     }
     
     /**

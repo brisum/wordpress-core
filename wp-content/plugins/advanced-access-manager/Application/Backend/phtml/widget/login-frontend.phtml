@@ -28,6 +28,8 @@
                     <input id="<?php echo $this->get_field_id('pwd'); ?>" class="input login-input" value="" size="20" type="password" />
                 </label>
             </p>
+            
+            <?php do_action('login_form'); ?>
 
             <p class="forgetmenot">
                 <label for="rememberme">
@@ -42,7 +44,14 @@
         </div>
 
         <p id="<?php echo $this->get_field_id('nav'); ?>">
-            <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>">Lost your password?</a>
+            <?php 
+            if ( get_option( 'users_can_register' ) ) { 
+		$registration_url = sprintf('<a href="%s">%s</a>', esc_url(wp_registration_url()), __('Register'));
+		echo apply_filters( 'register', $registration_url );
+		echo esc_html(apply_filters('login_link_separator', ' | '));
+            }
+            ?>
+            <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php echo __('Lost your password?'); ?></a>
         </p>
     <?php } else { ?>
         <div style="display: table; width: 100%;">
@@ -50,8 +59,11 @@
                 <?php echo get_avatar(AAM::getUser()->ID, "50"); ?>
             </div>
             <div style="display:table-cell;">
-                <a href="<?php echo esc_url(get_admin_url()); ?>"><?php echo __('Dashboard'); ?></a><br/>
-                <a href="<?php echo esc_url(get_admin_url(null, 'profile.php')); ?>"><?php echo __('Edit My Profile'); ?></a><br/>
+                <?php $allowAdmin = !AAM_Core_API::capabilityExists('access_dashboard') || AAM::getUser()->hasCapability('access_dashboard'); ?>
+                <?php if ($allowAdmin) { ?>
+                    <a href="<?php echo esc_url(get_admin_url()); ?>"><?php echo __('Dashboard'); ?></a><br/>
+                    <a href="<?php echo esc_url(get_admin_url(null, 'profile.php')); ?>"><?php echo __('Edit My Profile'); ?></a><br/>
+                <?php } ?>
                 <a href="<?php echo esc_url(wp_logout_url()); ?>"><?php echo __('Log Out'); ?></a>
             </div>
         </div>

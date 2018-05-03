@@ -3,9 +3,12 @@
  * Plugin Name: Woocommerce Products Per Page
  * Plugin URI: https://wordpress.org/plugins/woocommerce-products-per-page/
  * Description: Integrate a 'products per page' dropdown on your WooCommerce website! Set-up in <strong>seconds</strong>!
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: Jeroen Sormani
  * Author URI: http://jeroensormani.com
+ *
+ * WC requires at least: 3.1.0
+ * WC tested up to:      3.3.0
 
  * Copyright Jeroen Sormani
  *
@@ -47,7 +50,7 @@ class Woocommerce_Products_Per_Page {
 	 * @since 1.2.0
 	 * @var string $version Plugin version number.
 	 */
-	public $version = '1.2.5';
+	public $version = '1.2.6';
 
 
 	/**
@@ -67,15 +70,11 @@ class Woocommerce_Products_Per_Page {
 	 */
 	public function __construct() {
 
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) :
-		    require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
-		endif;
-
-		if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) :
-			if ( ! is_plugin_active_for_network( 'woocommerce/woocommerce.php' ) ) :
-				return;
-			endif;
-		endif;
+		// Check if WooCommerce is active
+		require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		if ( ! is_plugin_active( 'woocommerce/woocommerce.php' ) && ! function_exists( 'WC' ) ) {
+			return;
+		}
 
 		$this->init();
 
@@ -217,7 +216,7 @@ class Woocommerce_Products_Per_Page {
 
 		if ( $file == plugin_basename( __FILE__ ) ) :
 			$links = array_merge( array(
-					'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=products&section=display#s2id_wppp_dropdown_location' ) ) . '">' . __( 'Settings', 'woocommerce-products-per-page' ) . '</a>'
+				'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=products&section=display#s2id_wppp_dropdown_location' ) ) . '">' . __( 'Settings', 'woocommerce-products-per-page' ) . '</a>'
 			), $links );
 		endif;
 

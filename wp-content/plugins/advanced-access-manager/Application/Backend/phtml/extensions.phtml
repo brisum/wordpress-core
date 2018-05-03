@@ -26,7 +26,7 @@
         <div>
             <ul class="nav nav-tabs" role="tablist">
                 <?php if(count($commercial)) { ?><li role="presentation" class="active"><a href="#premium-extensions" aria-controls="premium-extensions" role="tab" data-toggle="tab"><i class='icon-basket'></i> <?php echo __('Premium', AAM_KEY); ?></a></li><?php } ?>
-                <?php if(count($free)) { ?><li role="presentation" <?php echo (!count($commercial) ? 'class="active"' : ''); ?>><a href="#free-extensions" aria-controls="free-extensions" role="tab" data-toggle="tab"><i class='icon-download-cloud'></i> <?php echo __('Free', AAM_KEY); ?></a></li><?php } ?>
+                <?php if(count($free)) { ?><li role="presentation" <?php echo (!count($commercial) ? 'class="active"' : ''); ?>><a href="#free-extensions" aria-controls="free-extensions" role="tab" data-toggle="tab"><i class='icon-download-cloud'></i> <?php echo __('Free', AAM_KEY); ?> <span class="badge sup">NEW</span></a></li><?php } ?>
                 <li class="aam-update-check"><a href="#" id="aam-update-check"><i class='icon-arrows-cw'></i> <?php echo __('Check for Updates', AAM_KEY); ?></a></li>
             </ul>
 
@@ -38,19 +38,19 @@
                             <?php foreach ($commercial as $i => $product) { ?>
                                 <tr>
                                     <td width="80%">
-                                        <span class='aam-setting-title'><?php echo $product['title'], (!empty($product['new']) ? ' <span class="badge">NEW</span> ' : ''), (!empty($product['version']) ? ' <small class="text-muted">v' . $product['version'] . '</small>' : ''); ?></span>
+                                        <span class='aam-setting-title'><?php echo $product['title'], (!empty($product['tag']) ? '<sup><span class="badge sup">' . $product['tag'] . '</span></sup>' : ''), (!empty($product['version']) ? ' <small class="text-muted">v' . $product['version'] . '</small>' : ''); ?></span>
                                         <?php if (!empty($product['license']) && $this->canShowLicense()) { ?><small class="aam-license-key"><b>License:</b> <?php echo $product['license'] . (!empty($product['expire']) ? " (updates expire on {$product['expire']})" : ''); ?></small><?php } ?>
                                         <p class="aam-extension-description">
                                             <?php echo $product['description']; ?>
                                         </p>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <?php if ($product['status'] == AAM_Extension_Repository::STATUS_INSTALLED) { ?>
-                                            <a href="#" class="btn btn-sm btn-danger btn-block aam-deactivate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-attention-circled"></i> <?php echo __('Deactivate', AAM_KEY); ?></a>
+                                        <a href="#" class="btn btn-sm btn-danger btn-block aam-deactivate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-attention-circled"></i> <?php echo __('Deactivate', AAM_KEY); ?></a><small><?php echo __('extension is active', AAM_KEY); ?></small>
                                         <?php } elseif ($product['status'] == AAM_Extension_Repository::STATUS_UPDATE) { ?>
                                             <a href="#" class="btn btn-sm btn-warning btn-block aam-update-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-arrows-cw"></i> <?php echo __('Update', AAM_KEY); ?></a>
                                         <?php } elseif ($product['status'] == AAM_Extension_Repository::STATUS_INACTIVE) { ?>
-                                            <a href="#" class="btn btn-sm btn-success btn-block aam-activate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-check"></i> <?php echo __('Activate', AAM_KEY); ?></a>
+                                            <a href="#" class="btn btn-sm btn-success btn-block aam-activate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-check"></i> <?php echo __('Activate', AAM_KEY); ?></a><small><?php echo __('extension is inactive', AAM_KEY); ?></small>
                                         <?php } else { ?>
                                             <a href="<?php echo $product['url']; ?>" target="_blank" class="btn btn-sm btn-primary btn-block"><i class="icon-link"></i> <?php echo __('Read More', AAM_KEY); ?></a>
                                         <?php } ?>
@@ -66,18 +66,18 @@
                             <?php foreach ($free as $product) { ?>
                                 <tr>
                                     <td width="80%">
-                                        <span class='aam-setting-title'><?php echo $product['title'], (!empty($product['version']) ? ' <small class="text-muted">v' . $product['version'] . '</small>' : ''), ' - ' . ('<span class="text-success">' . __('Free', AAM_KEY) . '</span>'); ?></span>
+                                        <span class='aam-setting-title'><?php echo $product['title'], (!empty($product['tag']) ? '<sup><span class="badge sup">' . $product['tag'] . '</span></sup>' : ''), (!empty($product['version']) ? ' <small class="text-muted">v' . $product['version'] . '</small>' : ''), ' - ' . ('<span class="text-success">' . __('Free', AAM_KEY) . '</span>'); ?></span>
                                         <p class="aam-extension-description">
                                             <?php echo $product['description']; ?>
                                         </p>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <?php if ($product['status'] == AAM_Extension_Repository::STATUS_INSTALLED) { ?>
-                                            <a href="#" class="btn btn-sm btn-danger btn-block aam-deactivate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-attention-circled"></i> <?php echo __('Deactivate', AAM_KEY); ?></a>
+                                            <a href="#" class="btn btn-sm btn-danger btn-block aam-deactivate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-attention-circled"></i> <?php echo __('Deactivate', AAM_KEY); ?></a><small><?php echo __('extension is active', AAM_KEY); ?></small>
                                         <?php } elseif ($product['status'] == AAM_Extension_Repository::STATUS_UPDATE) { ?>
                                             <a href="#" class="btn btn-sm btn-warning btn-block aam-update-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-arrows-cw"></i> <?php echo __('Update', AAM_KEY); ?></a>
                                         <?php } elseif ($product['status'] == AAM_Extension_Repository::STATUS_INACTIVE) { ?>
-                                            <a href="#" class="btn btn-sm btn-success btn-block aam-activate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-check"></i> <?php echo __('Activate', AAM_KEY); ?></a>
+                                            <a href="#" class="btn btn-sm btn-success btn-block aam-activate-extension" data-product="<?php echo $product['id']; ?>"><i class="icon-check"></i> <?php echo __('Activate', AAM_KEY); ?></a><small><?php echo __('extension is inactive', AAM_KEY); ?></small>
                                         <?php } else { ?>
                                             <a href="#" class="btn btn-sm btn-success btn-block aam-download-extension" data-license="<?php echo $product['license']; ?>"><i class="icon-download-cloud"></i> <?php echo __('Download', AAM_KEY); ?></a>
                                         <?php } ?>
