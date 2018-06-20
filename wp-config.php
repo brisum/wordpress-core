@@ -18,6 +18,8 @@
  * @package WordPress
  */
 
+define('WP_CACHE', true);
+
 if ('domain.com.ua'  != $_SERVER['SERVER_NAME']) {
     header("X-Robots-Tag: noindex, nofollow", true);
 }
@@ -78,6 +80,9 @@ define('WP_AUTO_UPDATE_CORE', false);
 /** Абсолютный путь к директории WordPress. */
 if ( !defined('ABSPATH') )
     define('ABSPATH', dirname(__FILE__) . '/');
+
+$log = sprintf(ABSPATH . '/log/%s-error.log', date('Y-m-d'));
+ini_set('error_log', $log);
 
 /** Инициализирует переменные WordPress и подключает файлы. */
 require_once(ABSPATH . 'wp-settings.php');

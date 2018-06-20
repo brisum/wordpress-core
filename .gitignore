@@ -7,6 +7,8 @@ vendor
 vendor-bower
 dev
 
+log/*.log
+
 wp-content/db.php
 wp-content/uploads/*
 !wp-content/uploads/index.php
@@ -14,5 +16,4 @@ wp-content/files_mf
 wp-content/themes/*
 !wp-content/themes/twentyseventeen
 !wp-content/themes/index.php
-wp-content/debug.log
 wp-config-local.php
