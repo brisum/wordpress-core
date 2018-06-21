@@ -55,8 +55,11 @@ abstract class PMXI_Controller_Admin extends PMXI_Controller {
 		
 		parent::__construct();
 		
-		// add special filter for url fields
-		$this->input->addFilter(create_function('$str', 'return "http://" == $str || "ftp://" == $str ? "" : $str;'));
+		if (version_compare(phpversion(), '7.2'  , "<")){
+            $filter = create_function('$str', 'return "http://" == $str || "ftp://" == $str ? "" : $str;');
+            // add special filter for url fields
+            $this->input->addFilter($filter);
+        }
 		
 		// enqueue required sripts and styles
 		global $wp_styles;
@@ -69,6 +72,7 @@ abstract class PMXI_Controller_Admin extends PMXI_Controller {
 		wp_enqueue_style('pmxi-admin-style-ie', WP_ALL_IMPORT_ROOT_URL . '/static/css/admin-ie.css');		
 		wp_enqueue_style('jquery-select2', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/css/select2/select2.css');
 		wp_enqueue_style('jquery-select2', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/css/select2/select2-bootstrap.css');
+		wp_enqueue_style('jquery-chosen', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/css/chosen/chosen.css');
 		add_editor_style( WP_ALL_IMPORT_ROOT_URL . '/static/css/custom-editor-style.css' );
 		wp_enqueue_style('jquery-codemirror', WP_ALL_IMPORT_ROOT_URL . '/static/codemirror/codemirror.css', array(), PMXI_VERSION);
 
@@ -96,6 +100,7 @@ abstract class PMXI_Controller_Admin extends PMXI_Controller {
 		wp_enqueue_script('jquery-nestable', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/jquery.mjs.nestedSortable.js', array('jquery', 'jquery-ui-dialog', 'jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-tabs', 'jquery-ui-progressbar'));
 		wp_enqueue_script('jquery-moment', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/moment.js', 'jquery', PMXI_VERSION);		
 		wp_enqueue_script('jquery-select2', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/select2.min.js', 'jquery');
+		wp_enqueue_script('jquery-chosen', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/chosen.jquery.min.js', 'jquery');
 		wp_enqueue_script('jquery-ddslick', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/jquery.ddslick.min.js', 'jquery');
 		wp_enqueue_script('jquery-contextmenu', WP_ALL_IMPORT_ROOT_URL . '/static/js/jquery/jquery.ui-contextmenu.min.js', array('jquery', 'jquery-ui-menu'));
 		wp_enqueue_script('jquery-codemirror', WP_ALL_IMPORT_ROOT_URL . '/static/codemirror/codemirror.js', array(), PMXI_VERSION);

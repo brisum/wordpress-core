@@ -273,18 +273,24 @@
 					count_failures++;
 					$('.count_failures').val(count_failures);
 
+					if (data != null && typeof data != 'undefined' && typeof data.log != 'undefined'){
+						$('#loglist').append(data.log);
+						write_log();
+					}
+
+					if (data != null && typeof data != 'undefined' && parseInt(data.records_per_request)){
+						records_per_request = data.records_per_request;
+					}
+
 					if (count_failures > 4 || records_per_request < 2){
 						$('#process_notice').hide();
-						//$('#wpallimport-try-again').hide();
-						//$('.wp_all_import_restart_import').hide();
 						$('.wpallimport-modal-message').html($('#wpallimport-error-terminated').html()).show();
-
-						if (data != null && typeof data != 'undefined'){
-							$('#status').html('Error ' + '<span class="pmxi_error_msg">' + data.responseText + '</span>');
+						var errorMessage = "Import failed, please check logs";
+						if (data != null && typeof data != 'undefined' && typeof data.responseText != 'undefined'){
+						    errorMessage = data.responseText;
 						}
-						else{
-							$('#status').html('Error');
-						}
+						$('#status').html('Error ' + '<span class="pmxi_error_msg">' + errorMessage + '</span>');
+						
 						clearInterval(update);					
 						window.onbeforeunload = false;
 

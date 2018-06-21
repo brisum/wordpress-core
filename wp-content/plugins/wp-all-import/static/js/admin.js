@@ -958,24 +958,34 @@
 		}
 
 		$form.find('input[name$=download_images]:checked').each(function(){			
-			if ($(this).val() == 'gallery')
-			{
+			if ($(this).val() == 'gallery') {
 				$(this).parents('table:first').find('.search_through_the_media_library').slideUp();
 			}
-			else
-			{
+			else {
 				$(this).parents('table:first').find('.search_through_the_media_library').slideDown();
 			}
+            // download images hosted elsewhere
+            if ($(this).val() == 'yes'){
+                $('.search_through_the_media_library_logic').show();
+            }
+            else{
+                $('.search_through_the_media_library_logic').hide();
+            }
 		});
 
 		$form.find('input[name$=download_images]').click(function(){
-			if ($(this).is(':checked') && $(this).val() == 'gallery')
-			{
+			if ($(this).is(':checked') && $(this).val() == 'gallery') {
 				$(this).parents('table:first').find('.search_through_the_media_library').slideUp();
 			}
-			else
-			{
+			else {
 				$(this).parents('table:first').find('.search_through_the_media_library').slideDown();
+			}
+			// download images hosted elsewhere
+			if ($(this).val() == 'yes'){
+				$('.search_through_the_media_library_logic').slideDown();
+			}
+			else{
+				$('.search_through_the_media_library_logic').slideUp();
 			}
 		});
 
@@ -1854,9 +1864,9 @@
 
 	});
 
-	$('.wpallimport-collapsed').find('.wpallimport-collapsed-header').click(function(){
+	$('.wpallimport-collapsed').find('.wpallimport-collapsed-header').not('.disabled').click(function(){
 		var $parent = $(this).parents('.wpallimport-collapsed:first');
-		if ($parent.hasClass('closed')){			
+		if ($parent.hasClass('closed')){
 			$parent.removeClass('closed');
 			$parent.find('.wpallimport-collapsed-content:first').slideDown(400, function(){
 				if ($('#wp_all_import_code').length) editor.setCursor(1);
@@ -1866,7 +1876,7 @@
 			$parent.addClass('closed');			
 			$parent.find('.wpallimport-collapsed-content:first').slideUp();
 		}
-	});	
+	});		
 
 	$('#is_delete_posts').change(function(){
 		if ($(this).is(':checked')){

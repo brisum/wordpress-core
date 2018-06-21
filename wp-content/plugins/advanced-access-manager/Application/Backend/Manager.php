@@ -23,7 +23,7 @@ class AAM_Backend_Manager {
      * @access private 
      */
     private static $_instance = null;
-
+    
     /**
      * Initialize the object
      * 
@@ -38,6 +38,9 @@ class AAM_Backend_Manager {
         //check if user switch is required
         $this->checkUserSwitch();
         
+        //cache clearing hook
+        add_action('aam-clear-cache-action', 'AAM_Core_API::clearCache');
+        
         //print required JS & CSS
         add_action('admin_print_scripts', array($this, 'printJavascript'));
         add_action('admin_print_styles', array($this, 'printStylesheet'));
@@ -50,6 +53,9 @@ class AAM_Backend_Manager {
         
         //post title decorator
         add_filter('the_title', array($this, 'theTitle'), 999, 2);
+        
+        //permalink manager
+        add_filter('get_sample_permalink_html', array($this, 'getPermalinkHtml'), 10, 5);
         
         //screen options & contextual help hooks
         add_filter('screen_options_show_screen', array($this, 'screenOptions'));
@@ -64,7 +70,7 @@ class AAM_Backend_Manager {
             add_action('all_admin_notices', array($this, 'notification'));
         }
         
-        if (AAM_Core_Config::get('render-access-metabox', true)) {
+        if (AAM_Core_Config::get('ui.settings.renderAccessMetabox', true)) {
             add_action('edit_category_form_fields', array($this, 'renderTermMetabox'), 1);
             add_action('edit_link_category_form_fields', array($this, 'renderTermMetabox'), 1);
             add_action('edit_tag_form_fields', array($this, 'renderTermMetabox'), 1);
@@ -83,7 +89,7 @@ class AAM_Backend_Manager {
         //manager WordPress metaboxes
         add_action("in_admin_header", array($this, 'initMetaboxes'), 999);
         
-        if (AAM_Core_Config::get('show-access-link', true)) {
+        if (AAM_Core_Config::get('ui.settings.renderAccessActionLink', true)) {
             //extend post inline actions
             add_filter('page_row_actions', array($this, 'postRowActions'), 10, 2);
             add_filter('post_row_actions', array($this, 'postRowActions'), 10, 2);
@@ -102,13 +108,13 @@ class AAM_Backend_Manager {
         add_action('admin_init', array($this, 'adminInit'));
         
         //register login widget
-        if (AAM_Core_Config::get('secure-login', true)) {
+        if (AAM_Core_Config::get('core.settings.secureLogin', true)) {
             add_action('widgets_init', array($this, 'registerLoginWidget'));
             add_action('wp_ajax_nopriv_aamlogin', array($this, 'handleLogin'));
         }
         
         //register backend hooks and filters
-        if (AAM_Core_Config::get('backend-access-control', true)) {
+        if (AAM_Core_Config::get('core.settings.backendAccessControl', true)) {
             AAM_Backend_Filter::register();
         }
         
@@ -116,7 +122,50 @@ class AAM_Backend_Manager {
         
         if (version_compare(PHP_VERSION, '5.3.0') == -1) {
             AAM_Core_Console::add(
-                __('AAM requires PHP version 5.3.0 or higher to function properly', AAM_KEY)
+                'AAM requires PHP version 5.3.0 or higher to function properly'
+            );
+        }
+        
+        // TODO: Remove Jun 2019
+        $htpasswd = AAM_Core_Config::get('htpasswd');
+        if (!empty($htpasswd)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change all options that start with [htpasswd...] to [feature.metabox.htpasswd...]', 'b', 'b'
+            );
+        }
+        
+        $export = AAM_Core_Config::get('export', null);
+        if (!empty($export)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change all options that start with [export...] to [feature.export...]', 'b', 'b'
+            );
+        }
+        
+        $defcat = AAM_Core_Config::get('default.category', null);
+        if (!empty($defcat)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change [default.category] option to [feature.post.defaultTerm]', 'b', 'b'
+            );
+        }
+        
+        $dir = AAM_Core_Config::get('extention.directory', null);
+        if (!empty($dir)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change all options that start with [extention...] to [core.extention...]', 'b', 'b'
+            );
+        }
+        
+        $tmpl = AAM_Core_Config::get('login.shortcode', null);
+        if (!empty($tmpl)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change all options that start with [login.shortcode....] option to [feature.secureLogin.shortcode...]', 'b', 'b'
+            );
+        }
+        
+        $login = AAM_Core_Config::get('login.widget', null);
+        if (!empty($login)) {
+            AAM_Core_Console::add(
+                'On ConfigPress tab, change all options that start with [login.widget...] to [feature.secureLogin.widget...]', 'b', 'b'
             );
         }
     }
@@ -138,6 +187,20 @@ class AAM_Backend_Manager {
     }
     
     /**
+     * 
+     * @param string $html
+     * @return string
+     */
+    public function getPermalinkHtml($html) {
+        if (AAM_Core_API::capabilityExists('edit_permalink') 
+                && !AAM::getUser()->hasCapability('edit_permalink')) {
+            $html = '';
+        }
+        
+        return $html;
+    }
+    
+    /**
      * Profile updated hook
      * 
      * Adjust expiration time and user cache if profile updated
@@ -154,7 +217,7 @@ class AAM_Backend_Manager {
         
         //role changed?
         if (implode('', $user->roles) != implode('', $old->roles)) {
-            AAM_Core_Cache::clear($id);
+            AAM_Core_API::clearCache(new AAM_Core_Subject_User($id));
             
             //check if role has expiration data set
             $role   = (is_array($user->roles) ? $user->roles[0] : '');
@@ -348,10 +411,11 @@ class AAM_Backend_Manager {
      * 
      */
     public function metabox() {
-        $frontend = AAM_Core_Config::get('frontend-access-control', true);
-        $backend  = AAM_Core_Config::get('backend-access-control', true);
+        $frontend = AAM_Core_Config::get('core.settings.frontendAccessControl', true);
+        $backend  = AAM_Core_Config::get('core.settings.backendAccessControl', true);
+        $api      = AAM_Core_Config::get('core.settings.apiAccessControl', true);
         
-        if (($frontend || $backend) && AAM::getUser()->hasCapability('aam_manage_posts')) {
+        if (($frontend || $backend || $api) && AAM::getUser()->hasCapability('aam_manage_posts')) {
             add_meta_box(
                 'aam-acceess-manager', 
                 __('Access Manager', AAM_KEY) . ' <small style="color:#999999;">by AAM plugin</small>', 
@@ -381,10 +445,11 @@ class AAM_Backend_Manager {
      */
     public function renderTermMetabox($term) {
         if (is_a($term, 'WP_Term') && is_taxonomy_hierarchical($term->taxonomy)) {
-            $frontend = AAM_Core_Config::get('frontend-access-control', true);
-            $backend  = AAM_Core_Config::get('backend-access-control', true);
+            $frontend = AAM_Core_Config::get('core.settings.frontendAccessControl', true);
+            $backend  = AAM_Core_Config::get('core.settings.backendAccessControl', true);
+            $api      = AAM_Core_Config::get('core.settings.apiAccessControl', true);
 
-            if (($frontend || $backend) && AAM::getUser()->hasCapability('aam_manage_posts')) {
+            if (($frontend || $backend || $api) && AAM::getUser()->hasCapability('aam_manage_posts')) {
                 echo AAM_Backend_View::getInstance()->renderTermMetabox($term);
             }
         }
@@ -494,12 +559,13 @@ class AAM_Backend_Manager {
      * @return type
      */
     protected function renderExternalUIFeature($cap) {
-        $frontend       = AAM_Core_Config::get('frontend-access-control', true);
-        $backend        = AAM_Core_Config::get('backend-access-control', true);
+        $frontend       = AAM_Core_Config::get('core.settings.frontendAccessControl', true);
+        $backend        = AAM_Core_Config::get('core.settings.backendAccessControl', true);
+        $api            = AAM_Core_Config::get('core.settings.apiAccessControl', true);
         $aamManager     = AAM::getUser()->hasCapability('aam_manager');
         $featureManager = AAM::getUser()->hasCapability($cap);
         
-        return ($frontend || $backend) && $aamManager && $featureManager;
+        return ($frontend || $backend || $api) && $aamManager && $featureManager;
     }
 
     /**
@@ -664,7 +730,7 @@ class AAM_Backend_Manager {
     /**
      * Bootstrap the manager
      * 
-     * @return void
+     * @return AAM_Backend_View
      * 
      * @access public
      */
@@ -672,6 +738,8 @@ class AAM_Backend_Manager {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
+        
+        return self::$_instance;
     }
     
     /**
@@ -682,9 +750,7 @@ class AAM_Backend_Manager {
      * @access public
      */
     public static function getInstance() {
-        self::bootstrap();
-
-        return self::$_instance;
+        return self::bootstrap();
     }
 
 }

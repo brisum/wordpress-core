@@ -26,6 +26,7 @@
 	margin-left: 5px;
 	position: relative;
 	top: 4px;
+	background-size: cover;
 }
 .wpallimport-plugin input.datepicker {
 	width: 8em;
@@ -1454,7 +1455,7 @@ p.upgrade_link {
 .wpallimport-plugin #custom_type_selector .dd-option .dashicon-cpt:before,
 .wpallimport-plugin #custom_type_selector .dd-selected .dashicon-cpt:before{
 	font-family: "dashicons";
-	content: "\f333";
+	content: "\f111";
 	color: #555;
 }
 .wpallimport-plugin #custom_type_selector .dd-option .dashicon-import_users:before,
@@ -3073,7 +3074,12 @@ p.upgrade_link {
 	width: 220px;
 }
 .wpallimport-plugin .pmxi-admin-imports .column-info{
-	width: 110px;
+	width: 150px;
+}
+.wpallimport-plugin .scheduling-disabled {
+    color: #555;
+    text-decoration: none;
+    cursor: default;
 }
 /*--------------------------------------------------------------------------
 *

@@ -90,7 +90,7 @@ if ( ! function_exists('pmxi_curl_download') ) {
 		    fclose($fp);			
 		}
 
-        if ( ! ($image_info = apply_filters('pmxi_getimagesize', @getimagesize($fullpath), $fullpath)) or ! in_array($image_info[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_BMP)) ){
+        if ( preg_match('%\W(jpg|jpeg|gif|png)$%i', basename($fullpath)) and ( ! ($image_info = apply_filters('pmxi_getimagesize', @getimagesize($fullpath), $fullpath)) or ! in_array($image_info[2], array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)) ) ){
             return false;
         }
 

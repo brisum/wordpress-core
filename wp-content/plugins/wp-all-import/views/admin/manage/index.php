@@ -302,12 +302,11 @@ $columns = apply_filters('pmxi_manage_imports_columns', $columns);
 								break;
 							case 'info':
 								?>
-								<td>
-									
-									<a href="<?php echo add_query_arg(array('id' => $item['id'], 'action' => 'scheduling'), $this->baseUrl)?>"><?php _e('Cron Scheduling', 'wp_all_import_plugin'); ?></a> <br>
-									
+								<td>									
+									<a href="#" class="scheduling-disabled"><?php _e('Scheduling Options', 'wp_all_import_plugin'); ?></a>
+                                    <a href="#help" class="wpallimport-help" style="position: relative; top: -2px; margin-left: 0;"  title="<?php _e("To run this import on a schedule you must use the 'Download from URL' or 'Use existing file' option on the Import Settings page.", PMXI_Plugin::LANGUAGE_DOMAIN);?>">?</a>
+                                    <br/>							
 									<a href="<?php echo add_query_arg(array('page' => 'pmxi-admin-history', 'id' => $item['id']), remove_query_arg('pagenum', $this->baseUrl))?>"><?php _e('History Logs', 'wp_all_import_plugin'); ?></a>
-
 								</td>
 								<?php
 								break;

@@ -1,8 +1,8 @@
 === Import any XML or CSV File to WordPress ===
 Contributors: soflyy, wpallimport 
 Requires at least: 4.1
-Tested up to: 4.9.4
-Stable tag: 3.4.7
+Tested up to: 4.9.6
+Stable tag: 3.4.9
 Tags: wordpress csv import, wordpress xml import, xml, csv, datafeed, import, migrate, import csv to wordpress, import xml to wordpress, advanced xml import, advanced csv import, bulk csv import, bulk xml import, bulk data import, xml to custom post type, csv to custom post type, woocommerce csv import, woocommerce xml import, csv import, import csv, xml import, import xml, csv importer
 
 WP All Import is an extremely powerful importer that makes it easy to import any XML or CSV file to WordPress.
@@ -104,6 +104,17 @@ Does it work with special character encoding like Hebrew, Arabic, Chinese, etc?
 4. Manage imports.
 
 == Changelog ==
+
+= 3.4.9 =
+* bug fix: import using stream reader
+* bug fix: generation temporary files in system temporary folder   
+
+= 3.4.8 =
+* improvement: various import speed optimizations
+* bug fix: remove deprecated function calls for PHP 7.2 compatibility
+* bug fix: delete db tables when mu blog deleted
+* bug fix: remove BOM from import templates
+* bug fix: saving CSV delimiter when changing import file
 
 = 3.4.7 =
 * improvement: skip to the first specified record when importing only part of a file

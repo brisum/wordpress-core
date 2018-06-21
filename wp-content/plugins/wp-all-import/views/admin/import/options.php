@@ -80,6 +80,12 @@
 													
 							if ( in_array('reimport', $visible_sections)) include( 'options/_reimport_template.php' );
 							do_action('pmxi_options_tab', $isWizard, $post);
+
+							if(!isset($import)) {
+                                $import = $update_previous;
+                            }
+                            include( 'options/scheduling/_scheduling_ui.php' );
+							
 							if ( in_array('settings', $visible_sections)) include( 'options/_settings_template.php' );
 							
 							include( 'options/_buttons_template.php' );
