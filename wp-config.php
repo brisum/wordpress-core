@@ -20,8 +20,11 @@
 
 define('WP_CACHE', true);
 
-if ('domain.com.ua'  != $_SERVER['SERVER_NAME']) {
+if ('upakovka.com.ua'  != $_SERVER['SERVER_NAME']) {
     header("X-Robots-Tag: noindex, nofollow", true);
+    define('IS_ENV_PRODUCTION', false);
+} else {
+    define('IS_ENV_PRODUCTION', true);
 }
 
 require_once('wp-config-local.php');
